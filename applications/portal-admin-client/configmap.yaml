@@ -1,0 +1,44 @@
+# portal-admin-client ConfigMap
+# Portal Admin Client environment configuration for Kubernetes
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-admin-client-config
+  labels:
+    app: portal-admin-client
+    tier: frontend
+    component: portal-admin
+data:
+  # Backend Server URLs
+  NEXT_PUBLIC_AUTH_SERVER_URL: "http://auth-server:8000/api"
+  NEXT_PUBLIC_AUTHZ_SERVER_URL: "http://authz-server:8100/api"
+  NEXT_PUBLIC_PORTAL_SERVER_URL: "http://portal-server:8200/api"
+
+  # JWT Token Refresh URL
+  NEXT_PUBLIC_TOKEN_REFRESH_URL: "http://auth-server:8000/api/auth/refresh"
+
+  # Client URLs
+  NEXT_PUBLIC_ADMIN_CLIENT_URL: "http://portal-admin-client:3210"
+  NEXT_PUBLIC_PORTAL_CLIENT_URL: "http://portal-client:3200"
+
+  # Environment Configuration
+  NEXT_PUBLIC_ENVIRONMENT: "production"
+  NODE_ENV: "production"
+
+  # Next.js Configuration
+  NEXT_TELEMETRY_DISABLED: "1"
+
+  # Optional Settings
+  NEXT_PUBLIC_DEBUG: "false"
+  NEXT_PUBLIC_LOG_LEVEL: "info"
+
+  # HTTP Client Settings (@krgeobuk/http-client)
+  NEXT_PUBLIC_API_TIMEOUT: "15000"  # 15 seconds
+  NEXT_PUBLIC_RATE_LIMIT_MAX_ATTEMPTS: "50"  # Stricter for admin
+  NEXT_PUBLIC_RATE_LIMIT_WINDOW_MS: "60000"
+
+  # Security Settings (Admin requires higher security)
+  NEXT_PUBLIC_ENABLE_CSRF: "true"
+  NEXT_PUBLIC_ENABLE_INPUT_VALIDATION: "true"
+  NEXT_PUBLIC_ENABLE_SECURITY_LOGGING: "true"

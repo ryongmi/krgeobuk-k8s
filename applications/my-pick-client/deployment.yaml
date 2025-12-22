@@ -1,0 +1,98 @@
+# my-pick-client Deployment
+# MyPick Client deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-pick-client
+  labels:
+    app: my-pick-client
+    tier: frontend
+    component: mypick
+spec:
+  replicas: 2  # High availability with 2 replicas
+  selector:
+    matchLabels:
+      app: my-pick-client
+  template:
+    metadata:
+      labels:
+        app: my-pick-client
+        tier: frontend
+        component: mypick
+    spec:
+      containers:
+      - name: my-pick-client
+        image: your-registry/my-pick-client:latest
+        imagePullPolicy: Always
+        ports:
+        # Next.js HTTP port
+        - name: http
+          containerPort: 3300
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: my-pick-client-config
+
+        # Sensitive environment variables from Secrets
+        env:
+        - name: NEXT_PUBLIC_YOUTUBE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-client-secrets
+              key: NEXT_PUBLIC_YOUTUBE_API_KEY
+        - name: NEXT_PUBLIC_TWITTER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-client-secrets
+              key: NEXT_PUBLIC_TWITTER_API_KEY
+        - name: NEXT_PUBLIC_TWITTER_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-client-secrets
+              key: NEXT_PUBLIC_TWITTER_API_SECRET
+        - name: NEXT_PUBLIC_TWITTER_BEARER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-client-secrets
+              key: NEXT_PUBLIC_TWITTER_BEARER_TOKEN
+
+        # Resource limits and requests
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+
+        # Liveness probe (checks if container is alive)
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3300
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe (checks if container is ready to serve traffic)
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3300
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Restart policy
+      restartPolicy: Always
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

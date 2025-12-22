@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-pick-admin-client
+spec:
+  replicas: 1  # dev는 1개
+  template:
+    spec:
+      containers:
+      - name: my-pick-admin-client
+        resources:
+          requests:
+            cpu: 50m  # dev는 최소 리소스
+            memory: 128Mi
+          limits:
+            cpu: 150m
+            memory: 256Mi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-pick-admin-client-config
+data:
+  NEXT_PUBLIC_ENVIRONMENT: "development"
+  NODE_ENV: "development"
+  NEXT_PUBLIC_ENABLE_DEV_TOOLS: "true"  # dev는 개발 도구 활성화
+  NEXT_PUBLIC_ENABLE_MOCK_DATA: "false"

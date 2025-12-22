@@ -1,0 +1,33 @@
+# portal-server Service
+# Portal server service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-server
+  labels:
+    app: portal-server
+    tier: backend
+    component: portal
+spec:
+  type: ClusterIP
+  selector:
+    app: portal-server
+  ports:
+  # HTTP API port (REST API for clients)
+  - name: http
+    port: 8200
+    targetPort: 8200
+    protocol: TCP
+
+  # TCP microservice port (service-to-service communication)
+  - name: tcp
+    port: 8210
+    targetPort: 8210
+    protocol: TCP
+
+  # Session affinity for better caching performance
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours

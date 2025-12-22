@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-pick-client
+spec:
+  replicas: 1  # dev는 1개
+  template:
+    spec:
+      containers:
+      - name: my-pick-client
+        resources:
+          requests:
+            cpu: 50m  # dev는 최소 리소스
+            memory: 128Mi
+          limits:
+            cpu: 150m
+            memory: 256Mi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-pick-client-config
+data:
+  NEXT_PUBLIC_DEBUG: "true"  # dev는 디버그 모드
+  NEXT_PUBLIC_LOG_LEVEL: "debug"
+  NEXT_PUBLIC_ENVIRONMENT: "development"
+  NODE_ENV: "development"

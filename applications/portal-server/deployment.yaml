@@ -1,0 +1,110 @@
+# portal-server Deployment
+# Portal server deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-server
+  labels:
+    app: portal-server
+    tier: backend
+    component: portal
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: portal-server
+  template:
+    metadata:
+      labels:
+        app: portal-server
+        tier: backend
+        component: portal
+    spec:
+      containers:
+      - name: portal-server
+        image: your-registry/portal-server:latest
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - name: http
+          containerPort: 8200
+          protocol: TCP
+        - name: tcp
+          containerPort: 8210
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: portal-server-config
+
+        # Environment variables from Secrets
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: portal-server-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: portal-server-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: portal-server-secrets
+              key: REDIS_PASSWORD
+
+        # Volume mounts
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: jwt-keys
+          mountPath: /etc/jwt-keys
+          readOnly: true
+
+        # Resource limits
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        # Liveness probe - checks if container is alive
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8200
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe - checks if container is ready to serve traffic
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8200
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Volumes
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: jwt-keys
+        secret:
+          secretName: portal-server-jwt-keys
+          defaultMode: 0400  # Read-only for owner
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

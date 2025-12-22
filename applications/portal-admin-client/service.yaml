@@ -1,0 +1,27 @@
+# portal-admin-client Service
+# Portal Admin Client service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-admin-client
+  labels:
+    app: portal-admin-client
+    tier: frontend
+    component: portal-admin
+spec:
+  type: ClusterIP
+  selector:
+    app: portal-admin-client
+  ports:
+  # Next.js HTTP port
+  - name: http
+    port: 3210
+    targetPort: 3210
+    protocol: TCP
+
+  # Session affinity for better performance
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours

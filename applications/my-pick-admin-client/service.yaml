@@ -1,0 +1,27 @@
+# my-pick-admin-client Service
+# MyPick Admin Client service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-pick-admin-client
+  labels:
+    app: my-pick-admin-client
+    tier: frontend
+    component: mypick-admin
+spec:
+  type: ClusterIP
+  selector:
+    app: my-pick-admin-client
+  ports:
+  # Next.js HTTP port
+  - name: http
+    port: 3310
+    targetPort: 3310
+    protocol: TCP
+
+  # Session affinity for better performance
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours

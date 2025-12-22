@@ -1,0 +1,33 @@
+# my-pick-server Service
+# MyPick Server service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-pick-server
+  labels:
+    app: my-pick-server
+    tier: backend
+    component: mypick
+spec:
+  type: ClusterIP
+  selector:
+    app: my-pick-server
+  ports:
+  # HTTP API port (REST API for clients)
+  - name: http
+    port: 8300
+    targetPort: 8300
+    protocol: TCP
+
+  # TCP microservice port (service-to-service communication)
+  - name: tcp
+    port: 8310
+    targetPort: 8310
+    protocol: TCP
+
+  # Session affinity for better caching performance
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours

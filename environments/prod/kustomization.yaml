@@ -5,16 +5,30 @@ namespace: krgeobuk-prod
 
 resources:
 - ../../base
+# Phase 1 Services
 - ../../applications/auth-server
 - ../../applications/auth-client
 - ../../applications/authz-server
 - ../../applications/portal-client
+# Phase 2 Services
+- ../../applications/portal-server
+- ../../applications/my-pick-server
+- ../../applications/my-pick-client
+- ../../applications/portal-admin-client
+- ../../applications/my-pick-admin-client
 
 patches:
+# Phase 1 Patches
 - path: patches/auth-server-prod.yaml
 - path: patches/auth-client-prod.yaml
 - path: patches/authz-server-prod.yaml
 - path: patches/portal-client-prod.yaml
+# Phase 2 Patches
+- path: patches/portal-server-prod.yaml
+- path: patches/my-pick-server-prod.yaml
+- path: patches/my-pick-client-prod.yaml
+- path: patches/portal-admin-client-prod.yaml
+- path: patches/my-pick-admin-client-prod.yaml
 
 configMapGenerator:
 # ========================================

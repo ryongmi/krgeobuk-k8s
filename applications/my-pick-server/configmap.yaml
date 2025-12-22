@@ -1,0 +1,65 @@
+# my-pick-server ConfigMap
+# MyPick Server environment configuration for Kubernetes
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-pick-server-config
+  labels:
+    app: my-pick-server
+    tier: backend
+    component: mypick
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  PORT: "8300"
+  TCP_PORT: "8310"
+  APP_NAME: "my-pick-server"
+
+  # CORS Configuration
+  CORS_ORIGINS: "http://localhost:3300,http://localhost:3310,http://my-pick-client,http://my-pick-admin-client"
+
+  # Microservice Communication (TCP)
+  AUTH_SERVICE_HOST: "auth-server"
+  AUTH_SERVICE_PORT: "8010"
+  AUTHZ_SERVICE_HOST: "authz-server"
+  AUTHZ_SERVICE_PORT: "8110"
+
+  # MySQL Configuration
+  MYSQL_HOST: "krgeobuk-mysql"
+  MYSQL_PORT: "3306"
+  MYSQL_USER: "geobuk"
+  MYSQL_DATABASE: "mypick"
+
+  # Redis Configuration
+  REDIS_HOST: "krgeobuk-redis"
+  REDIS_PORT: "6379"
+  REDIS_DB: "2"  # my-pick-server uses DB 2
+  REDIS_TTL: "300"  # 5 minutes cache TTL
+
+  # JWT Configuration
+  JWT_ACCESS_PUBLIC_KEY_PATH: "/etc/jwt-keys/access-public.key"
+  JWT_REFRESH_PUBLIC_KEY_PATH: "/etc/jwt-keys/refresh-public.key"
+
+  # External API Configuration
+  # YouTube API Configuration
+  YOUTUBE_QUOTA_LIMIT: "10000"
+  YOUTUBE_MAX_RESULTS: "50"
+  YOUTUBE_SYNC_INTERVAL: "3600000"  # 1 hour in milliseconds
+
+  # Twitter API Configuration
+  TWITTER_QUOTA_LIMIT: "2000000"
+  TWITTER_MAX_RESULTS: "100"
+  TWITTER_SYNC_INTERVAL: "3600000"  # 1 hour in milliseconds
+
+  # Logging Configuration
+  LOG_LEVEL: "info"
+  LOG_MAX_FILES: "7d"
+  LOG_MAX_SIZE: "20m"
+
+  # Health Check
+  HEALTH_CHECK_ENDPOINT: "/api/health"
+
+  # Content Sync Configuration
+  CONTENT_SYNC_ENABLED: "true"
+  CONTENT_SYNC_BATCH_SIZE: "100"

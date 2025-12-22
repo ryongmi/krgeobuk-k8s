@@ -1,0 +1,96 @@
+# portal-server ConfigMap
+# Portal server environment configuration for Kubernetes
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-server-config
+  labels:
+    app: portal-server
+    tier: backend
+    component: portal
+data:
+  # ========================================
+  # Server Settings
+  # ========================================
+
+  # Application environment
+  NODE_ENV: "production"
+
+  # HTTP API server port (client access)
+  PORT: "8200"
+
+  # TCP microservice port (service-to-service communication)
+  TCP_PORT: "8210"
+
+  # Application name
+  APP_NAME: "portal-server"
+
+  # ========================================
+  # CORS Settings
+  # ========================================
+
+  # Allowed origins (comma-separated)
+  CORS_ORIGINS: "http://localhost:3200,http://localhost:3210,http://portal-client,http://portal-admin-client"
+
+  # ========================================
+  # External Service Endpoints
+  # ========================================
+
+  # MSA service communication settings
+
+  # auth-server TCP endpoint
+  AUTH_SERVICE_HOST: "auth-server"
+  AUTH_SERVICE_PORT: "8010"
+
+  # authz-server TCP endpoint
+  AUTHZ_SERVICE_HOST: "authz-server"
+  AUTHZ_SERVICE_PORT: "8110"
+
+  # ========================================
+  # MySQL Database Settings
+  # ========================================
+
+  # MySQL server host (Kubernetes service name)
+  MYSQL_HOST: "krgeobuk-mysql"
+
+  # MySQL internal port (container communication)
+  MYSQL_PORT: "3306"
+
+  # MySQL username
+  MYSQL_USER: "geobuk"
+
+  # MySQL database name (will be overridden by kustomize for dev/prod)
+  MYSQL_DATABASE: "portal"
+
+  # ========================================
+  # Redis Cache Settings
+  # ========================================
+
+  # Redis server host (Kubernetes service name)
+  REDIS_HOST: "krgeobuk-redis"
+
+  # Redis internal port (container communication)
+  REDIS_PORT: "6379"
+
+  # ========================================
+  # JWT Token Validation Settings
+  # ========================================
+
+  # JWT access token public key path (for token verification)
+  # This public key is copied from auth-server
+  JWT_ACCESS_PUBLIC_KEY_PATH: "/etc/jwt-keys/access-public.key"
+
+  # ========================================
+  # Logging Settings
+  # ========================================
+
+  # Log level (error, warn, info, debug)
+  LOG_LEVEL: "info"
+
+  # ========================================
+  # Health Check Settings
+  # ========================================
+
+  # Health check endpoint
+  HEALTH_CHECK_ENDPOINT: "/api/health"

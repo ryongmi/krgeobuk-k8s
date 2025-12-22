@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-server
+spec:
+  replicas: 1  # dev는 1개
+  template:
+    spec:
+      containers:
+      - name: portal-server
+        resources:
+          requests:
+            cpu: 100m  # dev는 최소 리소스
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 384Mi

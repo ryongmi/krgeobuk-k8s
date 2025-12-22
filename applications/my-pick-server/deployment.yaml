@@ -1,0 +1,119 @@
+# my-pick-server Deployment
+# MyPick Server deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-pick-server
+  labels:
+    app: my-pick-server
+    tier: backend
+    component: mypick
+spec:
+  replicas: 2  # High availability with 2 replicas
+  selector:
+    matchLabels:
+      app: my-pick-server
+  template:
+    metadata:
+      labels:
+        app: my-pick-server
+        tier: backend
+        component: mypick
+    spec:
+      containers:
+      - name: my-pick-server
+        image: your-registry/my-pick-server:latest
+        imagePullPolicy: Always
+        ports:
+        # HTTP API port (REST API for clients)
+        - name: http
+          containerPort: 8300
+          protocol: TCP
+        # TCP microservice port (service-to-service communication)
+        - name: tcp
+          containerPort: 8310
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: my-pick-server-config
+
+        # Sensitive environment variables from Secrets
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-server-secrets
+              key: MYSQL_PASSWORD
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-server-secrets
+              key: REDIS_PASSWORD
+        - name: YOUTUBE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-server-secrets
+              key: YOUTUBE_API_KEY
+        - name: TWITTER_BEARER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: my-pick-server-secrets
+              key: TWITTER_BEARER_TOKEN
+
+        # Volume mounts
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: jwt-keys
+          mountPath: /etc/jwt-keys
+          readOnly: true
+
+        # Resource limits and requests
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        # Liveness probe (checks if container is alive)
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8300
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe (checks if container is ready to serve traffic)
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8300
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Volumes
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: jwt-keys
+        secret:
+          secretName: my-pick-server-jwt-keys
+          defaultMode: 0400  # Read-only for owner
+
+      # Restart policy
+      restartPolicy: Always
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

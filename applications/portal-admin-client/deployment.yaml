@@ -1,0 +1,75 @@
+# portal-admin-client Deployment
+# Portal Admin Client deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-admin-client
+  labels:
+    app: portal-admin-client
+    tier: frontend
+    component: portal-admin
+spec:
+  replicas: 2  # High availability with 2 replicas
+  selector:
+    matchLabels:
+      app: portal-admin-client
+  template:
+    metadata:
+      labels:
+        app: portal-admin-client
+        tier: frontend
+        component: portal-admin
+    spec:
+      containers:
+      - name: portal-admin-client
+        image: your-registry/portal-admin-client:latest
+        imagePullPolicy: Always
+        ports:
+        # Next.js HTTP port
+        - name: http
+          containerPort: 3210
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: portal-admin-client-config
+
+        # Resource limits and requests
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+
+        # Liveness probe (checks if container is alive)
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3210
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe (checks if container is ready to serve traffic)
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3210
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Restart policy
+      restartPolicy: Always
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

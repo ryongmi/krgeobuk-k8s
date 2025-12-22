@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-admin-client
+spec:
+  replicas: 2  # prod는 2개 (고가용성)
+  template:
+    spec:
+      containers:
+      - name: portal-admin-client
+        resources:
+          requests:
+            cpu: 200m  # prod는 더 많은 리소스
+            memory: 256Mi
+          limits:
+            cpu: 400m
+            memory: 512Mi
+
+      # Pod Anti-Affinity (다른 노드에 분산 배치)
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - portal-admin-client
+              topologyKey: kubernetes.io/hostname

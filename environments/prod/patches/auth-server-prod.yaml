@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-server
+spec:
+  replicas: 2  # prod는 2개 (고가용성)
+  template:
+    spec:
+      containers:
+      - name: auth-server
+        resources:
+          requests:
+            cpu: 500m  # prod는 더 많은 리소스
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+
+      # Pod Anti-Affinity (다른 노드에 분산 배치)
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auth-server
+              topologyKey: kubernetes.io/hostname

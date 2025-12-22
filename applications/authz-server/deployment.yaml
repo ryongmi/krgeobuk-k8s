@@ -1,0 +1,133 @@
+# authz-server Deployment
+# Authorization server deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authz-server
+  labels:
+    app: authz-server
+    tier: backend
+    component: authorization
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: authz-server
+  template:
+    metadata:
+      labels:
+        app: authz-server
+        tier: backend
+        component: authorization
+    spec:
+      containers:
+      - name: authz-server
+        image: your-registry/authz-server:latest
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - name: http
+          containerPort: 8100
+          protocol: TCP
+        - name: tcp
+          containerPort: 8110
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: authz-server-config
+
+        # Environment variables from Secrets
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authz-server-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authz-server-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authz-server-secrets
+              key: REDIS_PASSWORD
+
+        # Volume mounts
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: jwt-keys
+          mountPath: /etc/jwt-keys
+          readOnly: true
+
+        # Resource limits
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        # Liveness probe - checks if container is alive
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8100
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe - checks if container is ready to serve traffic
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8100
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Volumes
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: jwt-keys
+        secret:
+          secretName: authz-server-jwt-keys
+          defaultMode: 0400  # Read-only for owner
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+---
+# Deployment Strategy Notes:
+# ==========================
+#
+# Replicas:
+# - Development: 1 replica
+# - Staging: 2 replicas
+# - Production: 3+ replicas (adjust based on load)
+#
+# Rolling Update Strategy:
+# - maxSurge: 1 (create 1 new pod before terminating old ones)
+# - maxUnavailable: 0 (ensure zero downtime during updates)
+#
+# Resource Tuning:
+# - Adjust memory/CPU based on actual usage metrics
+# - Monitor permission check performance
+# - Scale horizontally for high load scenarios
+#
+# Health Checks:
+# - Liveness: Restarts unhealthy containers
+# - Readiness: Removes unready pods from service load balancing
+# - Adjust delays based on startup time

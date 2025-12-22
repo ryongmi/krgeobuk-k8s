@@ -1,0 +1,92 @@
+# portal-client Service
+# Portal client service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-client
+  labels:
+    app: portal-client
+    tier: frontend
+    component: portal
+spec:
+  type: ClusterIP
+  selector:
+    app: portal-client
+  ports:
+  # HTTP port for Next.js server
+  - name: http
+    port: 3200
+    targetPort: 3200
+    protocol: TCP
+
+---
+# Service Type Options:
+# ======================
+#
+# ClusterIP (default):
+# - Internal cluster access only
+# - Requires Ingress for external access
+# - Most secure option for production
+#
+# NodePort (for development):
+# - Exposes service on each node's IP at a static port
+# - Useful for local development without ingress
+# - Example:
+#   type: NodePort
+#   ports:
+#   - name: http
+#     port: 3200
+#     targetPort: 3200
+#     nodePort: 30200  # External port (30000-32767 range)
+#
+# LoadBalancer (for production):
+# - Exposes service externally using cloud provider's load balancer
+# - Automatically provisions external IP
+# - Example:
+#   type: LoadBalancer
+#   ports:
+#   - name: http
+#     port: 3200
+#     targetPort: 3200
+#
+# Ingress Configuration (recommended):
+# =====================================
+# Use Ingress for production deployments:
+#
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: portal-client-ingress
+#   annotations:
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#   - hosts:
+#     - portal.yourdomain.com
+#     secretName: portal-client-tls
+#   rules:
+#   - host: portal.yourdomain.com
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: portal-client
+#             port:
+#               number: 3200
+#
+# DNS:
+# ====
+# - Service DNS: portal-client.default.svc.cluster.local
+# - Short DNS: portal-client (same namespace)
+# - HTTP URL: http://portal-client:3200
+#
+# External Access:
+# ================
+# - Development: Use NodePort or kubectl port-forward
+# - Production: Use Ingress with SSL/TLS
+# - Example port-forward: kubectl port-forward svc/portal-client 3200:3200

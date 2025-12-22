@@ -1,0 +1,49 @@
+# External MySQL Service - dev namespace
+apiVersion: v1
+kind: Service
+metadata:
+  name: krgeobuk-mysql
+  namespace: krgeobuk-dev
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-mysql
+  namespace: krgeobuk-dev
+subsets:
+- addresses:
+  - ip: "192.168.1.100"  # miniPC IP - .env 파일에서 설정한 값으로 변경 필요
+  ports:
+  - port: 3306
+    protocol: TCP
+---
+# External MySQL Service - prod namespace
+apiVersion: v1
+kind: Service
+metadata:
+  name: krgeobuk-mysql
+  namespace: krgeobuk-prod
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-mysql
+  namespace: krgeobuk-prod
+subsets:
+- addresses:
+  - ip: "192.168.1.100"  # miniPC IP - .env 파일에서 설정한 값으로 변경 필요
+  ports:
+  - port: 3306
+    protocol: TCP

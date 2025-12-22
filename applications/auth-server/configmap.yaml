@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-server-config
+  labels:
+    app: auth-server
+data:
+  # ========================================
+  # 서버 설정
+  # ========================================
+  NODE_ENV: "production"
+  PORT: "8000"
+  TCP_PORT: "8010"
+  APP_NAME: "auth-server"
+
+  # CORS 설정 (환경별로 override 필요)
+  CORS_ORIGINS: "http://localhost:3000,http://localhost:3200,http://localhost:3210"
+  ALLOWED_REDIRECT_DOMAINS: "localhost,localhost:3000,localhost:3200,localhost:3210"
+  ALLOWED_REDIRECT_PROTOCOLS: "http,https"
+
+  # ========================================
+  # 클라이언트 애플리케이션 URL (환경별로 override)
+  # ========================================
+  AUTH_CLIENT_URL: "http://localhost:3000"
+  PORTAL_CLIENT_URL: "http://localhost:3200"
+
+  # ========================================
+  # 외부 서비스 엔드포인트 (MSA 통신)
+  # ========================================
+  AUTHZ_SERVICE_HOST: "authz-server"
+  AUTHZ_SERVICE_PORT: "8110"
+  PORTAL_SERVICE_HOST: "portal-server"
+  PORTAL_SERVICE_PORT: "8210"
+
+  # ========================================
+  # MySQL 설정
+  # ========================================
+  MYSQL_HOST: "krgeobuk-mysql"
+  MYSQL_PORT: "3306"
+  MYSQL_USER: "krgeobuk"
+  MYSQL_DATABASE: "auth"  # 환경별로 override (auth_dev, auth_prod)
+
+  # ========================================
+  # Redis 설정
+  # ========================================
+  REDIS_HOST: "krgeobuk-redis"
+  REDIS_PORT: "6379"
+
+  # ========================================
+  # Google OAuth 설정
+  # ========================================
+  GOOGLE_CLIENT_ID: "your-google-client-id.apps.googleusercontent.com"
+  GOOGLE_REDIRECT_URL: "http://localhost:8000/api/oauth/login-google/callback"
+  GOOGLE_TOKEN_URL: "https://oauth2.googleapis.com/token"
+  GOOGLE_USERINFO_URL: "https://www.googleapis.com/oauth2/v2/userinfo"
+
+  # ========================================
+  # Naver OAuth 설정
+  # ========================================
+  NAVER_CLIENT_ID: "your-naver-client-id"
+  NAVER_REDIRECT_URL: "http://localhost:8000/api/oauth/login-naver/callback"
+  NAVER_TOKEN_URL: "https://nid.naver.com/oauth2.0/token"
+  NAVER_USERINFO_URL: "https://openapi.naver.com/v1/nid/me"
+
+  # ========================================
+  # OAuth 리다이렉트 세션 설정
+  # ========================================
+  OAUTH_REDIRECT_SESSION_STORE_NAME: "redirectSession:"
+
+  # ========================================
+  # JWT 설정
+  # ========================================
+  # JWT 키 파일 경로 (Secret Volume에서 마운트됨)
+  JWT_ACCESS_PRIVATE_KEY_PATH: "/etc/jwt-keys/access-private.key"
+  JWT_ACCESS_PUBLIC_KEY_PATH: "/etc/jwt-keys/access-public.key"
+  JWT_REFRESH_PRIVATE_KEY_PATH: "/etc/jwt-keys/refresh-private.key"
+  JWT_REFRESH_PUBLIC_KEY_PATH: "/etc/jwt-keys/refresh-public.key"
+
+  # JWT 토큰 만료 시간
+  JWT_ACCESS_EXPIRES_IN: "15m"
+  JWT_REFRESH_EXPIRES_IN: "7d"
+
+  # JWT 쿠키 설정
+  JWT_SESSION_COOKIE_PATH: "/"
+  JWT_REFRESH_MAX_AGE: "604800000"  # 7일 (밀리초)
+  JWT_COOKIE_DOMAIN: ".localhost"   # 환경별로 override (.yourdomain.com)
+
+  # Redis 저장소 키 접두사
+  JWT_REFRESH_STORE_NAME: "refreshToken"
+  JWT_BLACKLIST_STORE_NAME: "blacklist:"
+  JWT_NAVER_STATE_STORE_NAME: "naverState:"
+  JWT_GOOGLE_STATE_STORE_NAME: "googleState:"
+
+  # ========================================
+  # Email 설정
+  # ========================================
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "587"
+  SMTP_SECURE: "false"
+  SMTP_FROM: "krgeobuk <noreply@krgeobuk.com>"
+
+  # 이메일 인증 설정
+  EMAIL_VERIFICATION_EXPIRES: "86400"
+  EMAIL_VERIFICATION_BASE_URL: "http://localhost:3000"  # 환경별로 override

@@ -1,0 +1,122 @@
+# portal-client ConfigMap
+# Portal client environment configuration for Kubernetes
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-client-config
+  labels:
+    app: portal-client
+    tier: frontend
+    component: portal
+data:
+  # ========================================
+  # Server URL Settings
+  # ========================================
+
+  # Authentication server URL (user login/registration)
+  NEXT_PUBLIC_AUTH_SERVER_URL: "http://auth-server:8000/api"
+
+  # Authorization server URL (role and permission management)
+  NEXT_PUBLIC_AUTHZ_SERVER_URL: "http://authz-server:8100/api"
+
+  # Portal server URL (service registration and management)
+  NEXT_PUBLIC_PORTAL_SERVER_URL: "http://portal-server:8200/api"
+
+  # JWT token refresh URL
+  NEXT_PUBLIC_TOKEN_REFRESH_URL: "http://auth-server:8000/api/auth/refresh"
+
+  # Portal client URL (current app)
+  NEXT_PUBLIC_PORTAL_CLIENT_URL: "http://localhost:3200"
+
+  # ========================================
+  # Environment Settings
+  # ========================================
+
+  # Application environment (local, development, production)
+  NEXT_PUBLIC_ENVIRONMENT: "production"
+
+  # Node.js environment
+  NODE_ENV: "production"
+
+  # ========================================
+  # Next.js Settings
+  # ========================================
+
+  # Disable Next.js telemetry (privacy protection)
+  NEXT_TELEMETRY_DISABLED: "1"
+
+  # ========================================
+  # HTTP Client Settings
+  # ========================================
+
+  # Allowed origins (comma-separated) - security policy
+  # Default: localhost,127.0.0.1,krgeobuk.com
+  ALLOWED_ORIGINS: "localhost,127.0.0.1,krgeobuk.com,auth-server,authz-server,portal-server"
+
+  # API request timeout (milliseconds)
+  NEXT_PUBLIC_API_TIMEOUT: "15000"
+
+  # ========================================
+  # Rate Limiter Settings
+  # ========================================
+
+  # Maximum request attempts
+  NEXT_PUBLIC_RATE_LIMIT_MAX_ATTEMPTS: "50"
+
+  # Time window (milliseconds)
+  NEXT_PUBLIC_RATE_LIMIT_WINDOW_MS: "60000"
+
+  # ========================================
+  # Security Settings
+  # ========================================
+
+  # CSRF protection enabled
+  NEXT_PUBLIC_ENABLE_CSRF: "true"
+
+  # Input validation enabled
+  NEXT_PUBLIC_ENABLE_INPUT_VALIDATION: "true"
+
+  # Security logging enabled
+  NEXT_PUBLIC_ENABLE_SECURITY_LOGGING: "true"
+
+  # ========================================
+  # Debug Settings (optional)
+  # ========================================
+
+  # Debug mode (true/false)
+  NEXT_PUBLIC_DEBUG: "false"
+
+  # Log level (error, warn, info, debug)
+  NEXT_PUBLIC_LOG_LEVEL: "info"
+
+---
+# Configuration Notes:
+# =====================
+#
+# NEXT_PUBLIC_ Prefix:
+# - All NEXT_PUBLIC_ variables are bundled into the client-side JavaScript
+# - These values are PUBLIC and visible in the browser
+# - Never put sensitive data (passwords, private keys) in NEXT_PUBLIC_ variables
+#
+# Server URLs:
+# - Use Kubernetes service DNS names for internal communication
+# - auth-server:8000 resolves to auth-server service in the same namespace
+# - For external access, use ingress domain names
+#
+# Environment-Specific Overrides:
+# - Development: Use localhost URLs for local testing
+# - Staging: Use staging domain names
+# - Production: Use production domain names
+# - Kustomize will override these values per environment
+#
+# Security Considerations:
+# - All NEXT_PUBLIC_ variables are exposed to the browser
+# - Use server-side environment variables for sensitive data
+# - Enable all security features in production
+# - Use HTTPS in production environments
+#
+# Performance Tuning:
+# - API_TIMEOUT: Increase for slow networks
+# - RATE_LIMIT_MAX_ATTEMPTS: Adjust based on user behavior
+# - Cache settings: Configure based on data freshness requirements

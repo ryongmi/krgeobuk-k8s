@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-client
+  labels:
+    app: auth-client
+    tier: frontend
+spec:
+  replicas: 1  # base 기본값 (최소)
+  selector:
+    matchLabels:
+      app: auth-client
+  template:
+    metadata:
+      labels:
+        app: auth-client
+        tier: frontend
+    spec:
+      containers:
+      - name: auth-client
+        image: krgeobuk/auth-client:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+
+        envFrom:
+        - configMapRef:
+            name: auth-client-config
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+        resources:
+          requests:
+            cpu: 50m  # 프론트엔드는 더 적은 리소스
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+        - name: cache
+          mountPath: /var/cache/nginx
+        - name: run
+          mountPath: /var/run
+
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: auth-client-nginx-config
+      - name: cache
+        emptyDir: {}
+      - name: run
+        emptyDir: {}
+
+      restartPolicy: Always

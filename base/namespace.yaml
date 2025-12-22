@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: krgeobuk-dev
+  labels:
+    name: krgeobuk-dev
+    environment: development
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: krgeobuk-prod
+  labels:
+    name: krgeobuk-prod
+    environment: production

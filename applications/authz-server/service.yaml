@@ -1,0 +1,82 @@
+# authz-server Service
+# Authorization server service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authz-server
+  labels:
+    app: authz-server
+    tier: backend
+    component: authorization
+spec:
+  type: ClusterIP
+  selector:
+    app: authz-server
+  ports:
+  # HTTP API port (REST API for clients)
+  - name: http
+    port: 8100
+    targetPort: 8100
+    protocol: TCP
+
+  # TCP microservice port (service-to-service communication)
+  - name: tcp
+    port: 8110
+    targetPort: 8110
+    protocol: TCP
+
+  # Session affinity for better caching performance
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours
+
+---
+# Service Type Options:
+# ======================
+#
+# ClusterIP (default):
+# - Internal cluster access only
+# - Used for microservice communication
+# - Most secure option
+#
+# NodePort (for development):
+# - Exposes service on each node's IP at a static port
+# - Useful for local development without ingress
+# - Example:
+#   type: NodePort
+#   ports:
+#   - name: http
+#     port: 8100
+#     targetPort: 8100
+#     nodePort: 30100  # External port (30000-32767 range)
+#
+# LoadBalancer (for production):
+# - Exposes service externally using cloud provider's load balancer
+# - Automatically provisions external IP
+# - Example:
+#   type: LoadBalancer
+#   ports:
+#   - name: http
+#     port: 8100
+#     targetPort: 8100
+#
+# Session Affinity:
+# =================
+# - Enabled for better Redis caching performance
+# - Routes requests from same client IP to same pod
+# - Improves permission cache hit rate
+# - Timeout: 3 hours (configurable)
+#
+# Port Usage:
+# ===========
+# - 8100: HTTP API (REST endpoints for portal-client, auth-client)
+# - 8110: TCP microservice (high-performance permission checks from other services)
+#
+# DNS:
+# ====
+# - Service DNS: authz-server.default.svc.cluster.local
+# - Short DNS: authz-server (same namespace)
+# - HTTP API: http://authz-server:8100
+# - TCP endpoint: authz-server:8110

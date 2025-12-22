@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-client
+spec:
+  replicas: 1  # dev는 1개
+  template:
+    spec:
+      containers:
+      - name: portal-client
+        resources:
+          requests:
+            cpu: 50m   # 프론트엔드는 더 적은 리소스
+            memory: 64Mi
+          limits:
+            cpu: 150m
+            memory: 256Mi

@@ -1,0 +1,124 @@
+# portal-client Deployment
+# Portal client deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-client
+  labels:
+    app: portal-client
+    tier: frontend
+    component: portal
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: portal-client
+  template:
+    metadata:
+      labels:
+        app: portal-client
+        tier: frontend
+        component: portal
+    spec:
+      containers:
+      - name: portal-client
+        image: your-registry/portal-client:latest
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - name: http
+          containerPort: 3200
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: portal-client-config
+
+        # Volume mounts (if needed for static assets or cache)
+        volumeMounts:
+        - name: nextjs-cache
+          mountPath: /app/.next/cache
+
+        # Resource limits
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+
+        # Liveness probe - checks if container is alive
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3200
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe - checks if container is ready to serve traffic
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3200
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Volumes
+      volumes:
+      - name: nextjs-cache
+        emptyDir: {}
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+---
+# Deployment Strategy Notes:
+# ==========================
+#
+# Replicas:
+# - Development: 1 replica
+# - Staging: 2 replicas
+# - Production: 3+ replicas (for high availability)
+#
+# Rolling Update Strategy:
+# - maxSurge: 1 (create 1 new pod before terminating old ones)
+# - maxUnavailable: 0 (ensure zero downtime during updates)
+#
+# Resource Tuning:
+# - Next.js is relatively lightweight
+# - Adjust based on actual usage and page complexity
+# - Static pages require less resources than SSR pages
+#
+# Health Checks:
+# - Liveness: Checks if Next.js server is responsive
+# - Readiness: Ensures app is fully loaded before receiving traffic
+# - Path: "/" (homepage should always be accessible)
+#
+# Cache Volume:
+# - Next.js build cache stored in emptyDir volume
+# - Improves rebuild performance
+# - Not persisted across pod restarts (intentional)
+#
+# Image Building:
+# - Build with NEXT_PUBLIC_ environment variables at build time
+# - Use multi-stage Dockerfile for smaller image size
+# - Example:
+#   docker build \
+#     --build-arg NEXT_PUBLIC_AUTH_SERVER_URL=http://auth-server:8000/api \
+#     --build-arg NEXT_PUBLIC_AUTHZ_SERVER_URL=http://authz-server:8100/api \
+#     -t your-registry/portal-client:latest .
+#
+# Environment Variables:
+# - All NEXT_PUBLIC_ variables are bundled at build time
+# - Changing environment variables requires rebuilding the image
+# - Use runtime configuration for truly dynamic values

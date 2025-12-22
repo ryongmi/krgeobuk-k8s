@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-client
+  labels:
+    app: auth-client
+    tier: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-client
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  sessionAffinity: None

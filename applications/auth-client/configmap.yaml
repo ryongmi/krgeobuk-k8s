@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-client-config
+  labels:
+    app: auth-client
+data:
+  # ========================================
+  # 서버 URL 설정
+  # ========================================
+  # 인증 서버 URL - Kubernetes Service 이름 사용
+  # 환경별로 override 필요 (dev: http://auth-server, prod: https://auth-server.krgeobuk.com)
+  NEXT_PUBLIC_AUTH_SERVER_URL: "http://auth-server/api"
+
+  # ========================================
+  # SSO 통합 설정
+  # ========================================
+  # SSO 도메인 설정 (쿠키 도메인)
+  # 환경별로 override (dev: localhost, prod: krgeobuk.com)
+  NEXT_PUBLIC_DOMAIN: "localhost"
+
+  # 인증 클라이언트 URL (현재 앱) - SSO 허브 URL
+  # 환경별로 override
+  NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+
+  # 타겟 서비스 URL (SSO 리다이렉트 대상)
+  # 환경별로 override
+  NEXT_PUBLIC_PORTAL_CLIENT_URL: "http://localhost:3200"
+  NEXT_PUBLIC_PORTAL_ADMIN_URL: "http://localhost:3210"
+
+  # ========================================
+  # 환경 설정
+  # ========================================
+  # 애플리케이션 환경
+  NODE_ENV: "production"
+  NEXT_PUBLIC_ENVIRONMENT: "production"
+
+  # ========================================
+  # Next.js 설정
+  # ========================================
+  # Next.js 텔레메트리 비활성화
+  NEXT_TELEMETRY_DISABLED: "1"
+
+  # ========================================
+  # 선택적 설정 (개발/디버깅용)
+  # ========================================
+  # 디버그 모드 (환경별로 override)
+  # NEXT_PUBLIC_DEBUG: "false"
+
+  # 로그 레벨 (환경별로 override)
+  # NEXT_PUBLIC_LOG_LEVEL: "info"
+
+  # ========================================
+  # HTTP 클라이언트 설정 (@krgeobuk/http-client)
+  # ========================================
+  # 허용된 도메인 목록 (환경별로 override)
+  # ALLOWED_ORIGINS: "localhost,127.0.0.1,krgeobuk.com"
+
+  # API 요청 타임아웃 (밀리초)
+  # NEXT_PUBLIC_API_TIMEOUT: "8000"
+
+  # 레이트 리미터 설정
+  # NEXT_PUBLIC_RATE_LIMIT_MAX_ATTEMPTS: "30"
+  # NEXT_PUBLIC_RATE_LIMIT_WINDOW_MS: "60000"
+
+  # 보안 설정 (모두 기본값 true)
+  # NEXT_PUBLIC_ENABLE_CSRF: "true"
+  # NEXT_PUBLIC_ENABLE_INPUT_VALIDATION: "true"
+  # NEXT_PUBLIC_ENABLE_SECURITY_LOGGING: "true"

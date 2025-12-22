@@ -1,0 +1,49 @@
+# External Redis Service - dev namespace
+apiVersion: v1
+kind: Service
+metadata:
+  name: krgeobuk-redis
+  namespace: krgeobuk-dev
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-redis
+  namespace: krgeobuk-dev
+subsets:
+- addresses:
+  - ip: "192.168.1.100"  # miniPC IP - .env 파일에서 설정한 값으로 변경 필요
+  ports:
+  - port: 6379
+    protocol: TCP
+---
+# External Redis Service - prod namespace
+apiVersion: v1
+kind: Service
+metadata:
+  name: krgeobuk-redis
+  namespace: krgeobuk-prod
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-redis
+  namespace: krgeobuk-prod
+subsets:
+- addresses:
+  - ip: "192.168.1.100"  # miniPC IP - .env 파일에서 설정한 값으로 변경 필요
+  ports:
+  - port: 6379
+    protocol: TCP

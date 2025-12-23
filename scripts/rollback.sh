@@ -28,8 +28,10 @@ usage() {
     echo ""
     echo "서비스:"
     echo "  auth-server            - 인증 서버"
+    echo "  auth-client            - 인증 클라이언트"
     echo "  authz-server           - 권한 서버"
     echo "  portal-server          - 포털 서버"
+    echo "  portal-client          - 포털 클라이언트"
     echo "  my-pick-server         - MyPick 서버"
     echo "  my-pick-client         - MyPick 클라이언트"
     echo "  portal-admin-client    - 포털 관리자 클라이언트"
@@ -70,7 +72,7 @@ if [[ "$ENV" != "dev" && "$ENV" != "prod" ]]; then
 fi
 
 # 서비스 검증
-VALID_SERVICES=("auth-server" "authz-server" "portal-server" "my-pick-server" "my-pick-client" "portal-admin-client" "my-pick-admin-client")
+VALID_SERVICES=("auth-server" "auth-client" "authz-server" "portal-server" "portal-client" "my-pick-server" "my-pick-client" "portal-admin-client" "my-pick-admin-client")
 if [[ ! " ${VALID_SERVICES[@]} " =~ " ${SERVICE} " ]]; then
     echo -e "${RED}오류: 지원하지 않는 서비스입니다: $SERVICE${NC}"
     usage

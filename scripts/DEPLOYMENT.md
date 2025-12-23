@@ -63,8 +63,10 @@ Kubernetes 배포, 롤백, 모니터링을 위한 자동화 스크립트 모음�
 - `all` - 모든 서비스 (인프라 + 애플리케이션)
 - `infrastructure` - MySQL, Redis, Verdaccio
 - `auth-server` - 인증 서버
+- `auth-client` - 인증 클라이언트
 - `authz-server` - 권한 서버
 - `portal-server` - 포털 서버
+- `portal-client` - 포털 클라이언트
 - `my-pick-server` - MyPick 서버
 - `my-pick-client` - MyPick 클라이언트
 - `portal-admin-client` - 포털 관리자 클라이언트

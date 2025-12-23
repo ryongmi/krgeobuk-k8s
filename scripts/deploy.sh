@@ -30,8 +30,10 @@ usage() {
     echo "  all                    - 모든 서비스 배포"
     echo "  infrastructure         - 인프라 (MySQL, Redis, Verdaccio)"
     echo "  auth-server            - 인증 서버"
+    echo "  auth-client            - 인증 클라이언트"
     echo "  authz-server           - 권한 서버"
     echo "  portal-server          - 포털 서버"
+    echo "  portal-client          - 포털 클라이언트"
     echo "  my-pick-server         - MyPick 서버"
     echo "  my-pick-client         - MyPick 클라이언트"
     echo "  portal-admin-client    - 포털 관리자 클라이언트"
@@ -113,15 +115,17 @@ case $SERVICE in
         SERVICES=(
             "infrastructure"
             "auth-server"
+            "auth-client"
             "authz-server"
             "portal-server"
+            "portal-client"
             "my-pick-server"
             "my-pick-client"
             "portal-admin-client"
             "my-pick-admin-client"
         )
         ;;
-    infrastructure|auth-server|authz-server|portal-server|my-pick-server|my-pick-client|portal-admin-client|my-pick-admin-client)
+    infrastructure|auth-server|auth-client|authz-server|portal-server|portal-client|my-pick-server|my-pick-client|portal-admin-client|my-pick-admin-client)
         SERVICES=("$SERVICE")
         ;;
     *)

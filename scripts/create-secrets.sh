@@ -214,23 +214,18 @@ EOF
         ;;
 
     my-pick-client)
-        cat > "$OUTPUT_FILE" << EOF
-# my-pick-client Secrets
-# 자동 생성됨: $(date)
+        echo -e "${YELLOW}========================================${NC}"
+        echo -e "${YELLOW}my-pick-client 안내${NC}"
+        echo -e "${YELLOW}========================================${NC}"
+        echo -e "${CYAN}my-pick-client는 현재 별도의 Secret이 필요하지 않습니다.${NC}"
+        echo -e "${CYAN}(YouTube, Twitter API는 레거시로 더 이상 사용하지 않음)${NC}"
+        echo ""
+        echo -e "${GREEN}Secret 생성을 건너뜁니다.${NC}"
 
-apiVersion: v1
-kind: Secret
-metadata:
-  name: my-pick-client-secrets
-  labels:
-    app: my-pick-client
-type: Opaque
-data:
-  NEXT_PUBLIC_YOUTUBE_API_KEY: $(base64_encode "${NEXT_PUBLIC_YOUTUBE_API_KEY}")
-  NEXT_PUBLIC_TWITTER_API_KEY: $(base64_encode "${NEXT_PUBLIC_TWITTER_API_KEY}")
-  NEXT_PUBLIC_TWITTER_API_SECRET: $(base64_encode "${NEXT_PUBLIC_TWITTER_API_SECRET}")
-  NEXT_PUBLIC_TWITTER_BEARER_TOKEN: $(base64_encode "${NEXT_PUBLIC_TWITTER_BEARER_TOKEN}")
-EOF
+        # OUTPUT_FILE을 생성하지 않고 종료
+        echo ""
+        echo -e "${GREEN}✓ 작업 완료!${NC}"
+        exit 0
         ;;
 
     *)

@@ -131,7 +131,7 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 - 크리에이터 콘텐츠 통합 피드
 - 사용자 구독 관리
 - 북마크 및 좋아요 기능
-- YouTube/Twitter 콘텐츠 연동 (클라이언트 사이드)
+- 콘텐츠 연동 (서버 사이드 API 사용)
 - Redux Toolkit 상태 관리
 
 **기술 스택**:
@@ -560,7 +560,7 @@ Phase 2 배포 후 확인 사항:
 ### 외부 API 연동
 - [ ] my-pick-server → YouTube Data API v3
 - [ ] my-pick-server → Twitter API v2
-- [ ] my-pick-client → YouTube/Twitter (클라이언트 사이드)
+- [ ] my-pick-client → my-pick-server API (서버 사이드 연동)
 
 ### 프론트엔드
 - [ ] portal-client 로딩

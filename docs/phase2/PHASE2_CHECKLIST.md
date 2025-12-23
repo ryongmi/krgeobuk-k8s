@@ -79,23 +79,9 @@ kubectl apply -f secret.yaml -n krgeobuk-prod
 
 ### 1.3 my-pick-client Secret
 
-```bash
-cd applications/my-pick-client
-cp secret.yaml.template secret.yaml
-```
-
-**secret.yaml 편집 필요 항목**:
-- [ ] `NEXT_PUBLIC_YOUTUBE_API_KEY`: 클라이언트 사이드용 YouTube API 키
-  - ⚠️ 도메인 제한 설정 필수 (보안)
-- [ ] `NEXT_PUBLIC_TWITTER_API_KEY`: Twitter API Key
-- [ ] `NEXT_PUBLIC_TWITTER_API_SECRET`: Twitter API Secret
-- [ ] `NEXT_PUBLIC_TWITTER_BEARER_TOKEN`: Twitter Bearer Token
-
-**적용**:
-```bash
-kubectl apply -f secret.yaml -n krgeobuk-dev
-kubectl apply -f secret.yaml -n krgeobuk-prod
-```
+**⚠️ 현재 my-pick-client는 별도의 Secret이 필요하지 않습니다.**
+- YouTube, Twitter API 관련 환경 변수는 레거시로 제거되었습니다.
+- Secret 생성 및 적용을 건너뛰어도 됩니다.
 
 ### 1.4 portal-admin-client Secret
 

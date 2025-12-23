@@ -2,6 +2,31 @@
 
 krgeobuk 프로젝트의 Kubernetes 매니페스트입니다. Kustomize를 사용하여 환경별 설정을 관리합니다.
 
+**총 9개 마이크로서비스** | **2개 환경 (dev, prod)** | **Phase 2 완료** ✅
+
+## 📚 문서
+
+상세한 문서는 [docs/](docs/README.md) 폴더를 참고하세요:
+
+- [📖 전체 문서 인덱스](docs/README.md)
+- [📄 Phase 1 완료 보고서](docs/phase1/PHASE1_SUMMARY.md) - 기본 서비스 4개
+- [📄 Phase 2 완료 보고서](docs/phase2/PHASE2_SUMMARY.md) - 추가 서비스 5개
+- [✅ Phase 2 배포 체크리스트](docs/phase2/PHASE2_CHECKLIST.md) - 배포 가이드
+
+## 🎯 서비스 개요
+
+| Phase | 서비스 | 포트 | 역할 |
+|-------|--------|------|------|
+| **Phase 1** | auth-server | 8000/8010 | 인증 서버 (OAuth, JWT) |
+| | auth-client | 3000 | 인증 클라이언트 UI |
+| | authz-server | 8100/8110 | 권한 관리 서버 (RBAC) |
+| | portal-client | 3200 | 통합 포털 UI |
+| **Phase 2** | portal-server | 8200/8210 | 포털 백엔드 API |
+| | my-pick-server | 8300/8310 | MyPick 백엔드 API |
+| | my-pick-client | 3300 | MyPick 사용자 UI |
+| | portal-admin-client | 3210 | 포털 관리자 UI |
+| | my-pick-admin-client | 3310 | MyPick 관리자 UI |
+
 ## 구조
 
 ```
@@ -13,49 +38,57 @@ krgeobuk-k8s/
 │   └── kustomization.yaml
 │
 ├── applications/                  # 애플리케이션 템플릿
-│   ├── auth-server/              # auth-server 매니페스트
-│   │   ├── deployment.yaml
-│   │   ├── service.yaml
-│   │   ├── configmap.yaml
-│   │   ├── secret.yaml.template
-│   │   └── kustomization.yaml
-│   │
-│   ├── auth-client/              # auth-client 매니페스트
-│   │   ├── deployment.yaml
-│   │   ├── service.yaml
-│   │   ├── configmap.yaml
-│   │   ├── nginx-configmap.yaml
-│   │   └── kustomization.yaml
-│   │
-│   ├── authz-server/             # authz-server 매니페스트
-│   │   ├── deployment.yaml
-│   │   ├── service.yaml
-│   │   ├── configmap.yaml
-│   │   ├── secret.yaml.template
-│   │   └── kustomization.yaml
-│   │
-│   └── portal-client/            # portal-client 매니페스트
-│       ├── deployment.yaml
-│       ├── service.yaml
-│       ├── configmap.yaml
-│       └── kustomization.yaml
+│   ├── auth-server/              # Phase 1: 인증 서버
+│   ├── auth-client/              # Phase 1: 인증 클라이언트
+│   ├── authz-server/             # Phase 1: 권한 서버
+│   ├── portal-client/            # Phase 1: 포털 클라이언트
+│   ├── portal-server/            # Phase 2: 포털 백엔드
+│   ├── my-pick-server/           # Phase 2: MyPick 백엔드
+│   ├── my-pick-client/           # Phase 2: MyPick 클라이언트
+│   ├── portal-admin-client/      # Phase 2: 포털 관리자
+│   └── my-pick-admin-client/     # Phase 2: MyPick 관리자
+│   # 각 서비스는 동일한 구조:
+│   #   ├── deployment.yaml
+│   #   ├── service.yaml
+│   #   ├── configmap.yaml
+│   #   ├── secret.yaml.template (백엔드만)
+│   #   └── kustomization.yaml
+│
+├── docs/                         # 📚 문서 폴더
+│   ├── README.md                 # 문서 인덱스
+│   ├── phase1/                   # Phase 1 문서
+│   │   ├── PHASE1_SUMMARY.md
+│   │   └── PHASE1_CHECKLIST.md
+│   └── phase2/                   # Phase 2 문서
+│       ├── PHASE2_SUMMARY.md
+│       └── PHASE2_CHECKLIST.md
 │
 └── environments/                  # 환경별 설정
     ├── dev/                      # 개발 환경
-    │   ├── kustomization.yaml
-    │   └── patches/
+    │   ├── kustomization.yaml    # Phase 1 + Phase 2 통합
+    │   └── patches/              # 9개 서비스 패치
     │       ├── auth-server-dev.yaml
     │       ├── auth-client-dev.yaml
     │       ├── authz-server-dev.yaml
-    │       └── portal-client-dev.yaml
+    │       ├── portal-client-dev.yaml
+    │       ├── portal-server-dev.yaml            # Phase 2
+    │       ├── my-pick-server-dev.yaml           # Phase 2
+    │       ├── my-pick-client-dev.yaml           # Phase 2
+    │       ├── portal-admin-client-dev.yaml      # Phase 2
+    │       └── my-pick-admin-client-dev.yaml     # Phase 2
     │
     └── prod/                     # 운영 환경
-        ├── kustomization.yaml
-        └── patches/
+        ├── kustomization.yaml    # Phase 1 + Phase 2 통합
+        └── patches/              # 9개 서비스 패치
             ├── auth-server-prod.yaml
             ├── auth-client-prod.yaml
             ├── authz-server-prod.yaml
-            └── portal-client-prod.yaml
+            ├── portal-client-prod.yaml
+            ├── portal-server-prod.yaml           # Phase 2
+            ├── my-pick-server-prod.yaml          # Phase 2
+            ├── my-pick-client-prod.yaml          # Phase 2
+            ├── portal-admin-client-prod.yaml     # Phase 2
+            └── my-pick-admin-client-prod.yaml    # Phase 2
 ```
 
 ## 시작하기
@@ -107,18 +140,23 @@ kubectl apply -k environments/prod/
 ## 환경 정보
 
 ### Dev 환경 (krgeobuk-dev namespace)
-- **Replicas**: auth-server (1), auth-client (1), authz-server (1), portal-client (1)
-- **Resources**: 최소 리소스
-- **Database**: auth_dev, authz_dev
-- **Redis DB**: 0
+- **서비스**: 9개 (Phase 1: 4개 + Phase 2: 5개)
+- **Replicas**: 각 서비스 1개
+- **Resources**: 최소 리소스 (CPU: 50-100m, Memory: 128-256Mi)
+- **Database**: auth_dev, authz_dev, portal, mypick
+- **Redis DB**: 0 (auth), 1 (authz), 2 (my-pick)
 - **Log Level**: debug
+- **Total Resources**: ~650m CPU, ~1.2Gi Memory
 
 ### Prod 환경 (krgeobuk-prod namespace)
-- **Replicas**: auth-server (2), auth-client (2), authz-server (2), portal-client (2)
-- **Resources**: 더 많은 리소스
-- **Database**: auth_prod, authz_prod
+- **서비스**: 9개 (Phase 1: 4개 + Phase 2: 5개)
+- **Replicas**: 각 서비스 2개 (총 18개 Pod)
+- **Resources**: 고성능 (CPU: 200-500m, Memory: 256-512Mi)
+- **Database**: auth_prod, authz_prod, portal, mypick
 - **Redis DB**: 1
-- **Log Level**: info
+- **Log Level**: info/error
+- **Pod Anti-Affinity**: 노드 분산 배치 (고가용성)
+- **Total Resources**: ~6000m CPU, ~7Gi Memory
 
 ## 주요 명령어
 

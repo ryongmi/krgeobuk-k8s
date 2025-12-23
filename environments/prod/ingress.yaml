@@ -1,0 +1,221 @@
+# Production Environment Ingress
+# 모든 서비스를 하나의 Ingress로 관리 (TLS 필수)
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: krgeobuk-prod-ingress
+  namespace: krgeobuk-prod
+  annotations:
+    # NGINX Ingress Controller 설정
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
+    # CORS 설정 (프로덕션 - 특정 도메인만 허용)
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://krgeobuk.com,https://www.krgeobuk.com"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+
+    # 타임아웃 설정
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+
+    # 요청 크기 제한
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+
+    # SSL 리다이렉트 활성화 (Prod 환경)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # HSTS 설정 (보안 강화)
+    nginx.ingress.kubernetes.io/hsts: "true"
+    nginx.ingress.kubernetes.io/hsts-max-age: "31536000"
+    nginx.ingress.kubernetes.io/hsts-include-subdomains: "true"
+
+    # Rate Limiting (선택사항)
+    # nginx.ingress.kubernetes.io/limit-rps: "100"
+
+    # cert-manager 설정 (자동 SSL 인증서 발급)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+spec:
+  ingressClassName: nginx
+
+  # TLS 설정 (Let's Encrypt 자동 인증서)
+  tls:
+  - hosts:
+    - krgeobuk.com
+    - www.krgeobuk.com
+    secretName: krgeobuk-prod-tls
+
+  rules:
+  # 메인 도메인
+  - host: krgeobuk.com
+    http:
+      paths:
+      # auth-server (포트 8000)
+      - path: /auth(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: auth-server
+            port:
+              number: 8000
+
+      # authz-server (포트 8100)
+      - path: /authz(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: authz-server
+            port:
+              number: 8100
+
+      # portal-server (포트 8200)
+      - path: /portal-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portal-server
+            port:
+              number: 8200
+
+      # my-pick-server (포트 8300)
+      - path: /mypick-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-pick-server
+            port:
+              number: 8300
+
+      # my-pick-client (포트 3300)
+      - path: /mypick(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-pick-client
+            port:
+              number: 3300
+
+      # portal-admin-client (포트 3310)
+      - path: /portal-admin(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portal-admin-client
+            port:
+              number: 3310
+
+      # my-pick-admin-client (포트 3320)
+      - path: /mypick-admin(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-pick-admin-client
+            port:
+              number: 3320
+
+      # 기본 경로 - portal-client (포트 3000)
+      - path: /(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portal-client
+            port:
+              number: 3000
+
+  # www 서브도메인도 동일하게 처리
+  - host: www.krgeobuk.com
+    http:
+      paths:
+      - path: /auth(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: auth-server
+            port:
+              number: 8000
+      - path: /authz(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: authz-server
+            port:
+              number: 8100
+      - path: /portal-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portal-server
+            port:
+              number: 8200
+      - path: /mypick-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-pick-server
+            port:
+              number: 8300
+      - path: /mypick(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-pick-client
+            port:
+              number: 3300
+      - path: /portal-admin(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portal-admin-client
+            port:
+              number: 3310
+      - path: /mypick-admin(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-pick-admin-client
+            port:
+              number: 3320
+      - path: /(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portal-client
+            port:
+              number: 3000
+
+---
+# 서브도메인 기반 Ingress (선택사항)
+# 각 서비스를 서브도메인으로 분리하는 경우
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: auth-server-ingress
+#   namespace: krgeobuk-prod
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#   - hosts:
+#     - auth.krgeobuk.com
+#     secretName: auth-server-prod-tls
+#   rules:
+#   - host: auth.krgeobuk.com
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: auth-server
+#             port:
+#               number: 8000

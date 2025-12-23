@@ -1,0 +1,23 @@
+# Let's Encrypt Production Issuer
+# 프로덕션 환경에서 사용 (Rate Limit 있음)
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    # Let's Encrypt Production 서버
+    server: https://acme-v02.api.letsencrypt.org/directory
+
+    # 인증서 발급 알림을 받을 이메일
+    email: admin@krgeobuk.com
+
+    # Private Key를 저장할 Secret 이름
+    privateKeySecretRef:
+      name: letsencrypt-prod
+
+    # HTTP-01 Challenge
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

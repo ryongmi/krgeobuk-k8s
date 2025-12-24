@@ -27,17 +27,21 @@ usage() {
     echo "  prod   - 프로덕션 환경 (krgeobuk-prod 네임스페이스)"
     echo ""
     echo "서비스:"
-    echo "  all                    - 모든 서비스 배포"
-    echo "  infrastructure         - 인프라 (MySQL, Redis, Verdaccio)"
-    echo "  auth-server            - 인증 서버"
-    echo "  auth-client            - 인증 클라이언트"
-    echo "  authz-server           - 권한 서버"
-    echo "  portal-server          - 포털 서버"
-    echo "  portal-client          - 포털 클라이언트"
-    echo "  my-pick-server         - MyPick 서버"
-    echo "  my-pick-client         - MyPick 클라이언트"
-    echo "  portal-admin-client    - 포털 관리자 클라이언트"
-    echo "  my-pick-admin-client   - MyPick 관리자 클라이언트"
+    echo "  all                    - 전체 환경 배포 (environments/\$ENV)"
+    echo "  infrastructure         - Ingress/cert-manager 설치 안내"
+    echo "  auth-server            - 인증 서버 (개별 배포, 패치 미적용)"
+    echo "  auth-client            - 인증 클라이언트 (개별 배포, 패치 미적용)"
+    echo "  authz-server           - 권한 서버 (개별 배포, 패치 미적용)"
+    echo "  portal-server          - 포털 서버 (개별 배포, 패치 미적용)"
+    echo "  portal-client          - 포털 클라이언트 (개별 배포, 패치 미적용)"
+    echo "  my-pick-server         - MyPick 서버 (개별 배포, 패치 미적용)"
+    echo "  my-pick-client         - MyPick 클라이언트 (개별 배포, 패치 미적용)"
+    echo "  portal-admin-client    - 포털 관리자 클라이언트 (개별 배포, 패치 미적용)"
+    echo "  my-pick-admin-client   - MyPick 관리자 클라이언트 (개별 배포, 패치 미적용)"
+    echo ""
+    echo "참고:"
+    echo "  - 'all' 사용을 권장합니다 (환경별 패치 자동 적용)"
+    echo "  - 개별 서비스 배포 시 환경별 설정이 적용되지 않습니다"
     echo ""
     echo "예시:"
     echo "  $0 dev all                    # Dev 환경에 모든 서비스 배포"
@@ -112,18 +116,8 @@ declare -a SERVICES
 
 case $SERVICE in
     all)
-        SERVICES=(
-            "infrastructure"
-            "auth-server"
-            "auth-client"
-            "authz-server"
-            "portal-server"
-            "portal-client"
-            "my-pick-server"
-            "my-pick-client"
-            "portal-admin-client"
-            "my-pick-admin-client"
-        )
+        # 전체 환경 배포 (environments/$ENV)
+        SERVICES=("all")
         ;;
     infrastructure|auth-server|auth-client|authz-server|portal-server|portal-client|my-pick-server|my-pick-client|portal-admin-client|my-pick-admin-client)
         SERVICES=("$SERVICE")
@@ -156,52 +150,90 @@ echo ""
 # 배포 함수
 deploy_service() {
     local service=$1
-    local overlay_path=""
-
-    # infrastructure는 별도 경로
-    if [ "$service" == "infrastructure" ]; then
-        overlay_path="infrastructure/overlays/$ENV"
-    else
-        overlay_path="applications/$service/overlays/$ENV"
-    fi
+    local deploy_path=""
 
     echo -e "${BLUE}========================================${NC}"
     echo -e "${BLUE}배포 중: $service${NC}"
     echo -e "${BLUE}========================================${NC}"
 
+    # 배포 경로 설정
+    if [ "$service" == "infrastructure" ]; then
+        # Infrastructure는 별도 설치 필요
+        echo -e "${YELLOW}Infrastructure는 다음 명령어로 수동 설치하세요:${NC}"
+        echo ""
+        echo -e "${CYAN}NGINX Ingress Controller:${NC}"
+        echo "  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/baremetal/deploy.yaml"
+        echo ""
+        echo -e "${CYAN}cert-manager:${NC}"
+        echo "  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.yaml"
+        echo "  kubectl apply -f infrastructure/cert-manager/cluster-issuer-staging.yaml"
+        echo "  kubectl apply -f infrastructure/cert-manager/cluster-issuer-prod.yaml"
+        echo ""
+        echo -e "${CYAN}자세한 내용:${NC}"
+        echo "  - infrastructure/ingress-nginx/README.md"
+        echo "  - infrastructure/cert-manager/README.md"
+        echo ""
+        return 0
+    elif [ "$service" == "all" ]; then
+        # 전체 환경 배포
+        deploy_path="environments/$ENV"
+    else
+        # 개별 서비스 배포
+        echo -e "${YELLOW}⚠️  개별 서비스 배포는 환경별 패치가 적용되지 않습니다.${NC}"
+        echo -e "${YELLOW}권장: 전체 배포를 사용하세요 (./scripts/deploy.sh $ENV all)${NC}"
+        echo ""
+        deploy_path="applications/$service"
+    fi
+
     # 경로 확인
-    if [ ! -d "$overlay_path" ]; then
-        echo -e "${RED}✗ 오류: 오버레이 경로를 찾을 수 없습니다: $overlay_path${NC}"
+    if [ ! -d "$deploy_path" ]; then
+        echo -e "${RED}✗ 오류: 경로를 찾을 수 없습니다: $deploy_path${NC}"
         return 1
     fi
 
-    echo -e "${CYAN}경로:${NC} $overlay_path"
+    echo -e "${CYAN}경로:${NC} $deploy_path"
 
     # Kustomize build 및 apply
     echo -e "${CYAN}Kustomize 빌드 및 적용 중...${NC}"
-    if $KUSTOMIZE_CMD "$overlay_path" | kubectl apply -f - -n $NAMESPACE; then
+    if $KUSTOMIZE_CMD "$deploy_path" | kubectl apply -f - -n $NAMESPACE; then
         echo -e "${GREEN}✓${NC} $service 배포 완료"
     else
         echo -e "${RED}✗${NC} $service 배포 실패"
         return 1
     fi
 
-    # Deployment가 있는 경우 롤아웃 상태 확인
-    if kubectl get deployment -n $NAMESPACE -l "app=$service" &> /dev/null; then
-        echo -e "${CYAN}롤아웃 상태 확인 중...${NC}"
+    # Deployment 롤아웃 상태 확인 (all 배포인 경우만)
+    if [ "$service" == "all" ]; then
+        echo -e "${CYAN}배포된 서비스 롤아웃 확인 중...${NC}"
 
-        # 모든 deployment 가져오기
-        deployments=$(kubectl get deployment -n $NAMESPACE -l "app=$service" -o jsonpath='{.items[*].metadata.name}')
+        # 모든 deployment 확인
+        deployments=$(kubectl get deployment -n $NAMESPACE -o jsonpath='{.items[*].metadata.name}')
 
         if [ -n "$deployments" ]; then
             for deploy in $deployments; do
                 echo -e "${CYAN}  - $deploy 롤아웃 대기 중...${NC}"
-                if kubectl rollout status deployment/$deploy -n $NAMESPACE --timeout=300s; then
+                if kubectl rollout status deployment/$deploy -n $NAMESPACE --timeout=60s; then
                     echo -e "${GREEN}  ✓ $deploy 롤아웃 완료${NC}"
                 else
-                    echo -e "${YELLOW}  ⚠ $deploy 롤아웃 타임아웃 (계속 진행 중일 수 있습니다)${NC}"
+                    echo -e "${YELLOW}  ⚠ $deploy 롤아웃 진행 중 (백그라운드에서 계속됩니다)${NC}"
                 fi
             done
+        fi
+    elif [ "$service" != "infrastructure" ]; then
+        # 개별 서비스 롤아웃 확인
+        if kubectl get deployment -n $NAMESPACE -l "app=$service" &> /dev/null; then
+            deployments=$(kubectl get deployment -n $NAMESPACE -l "app=$service" -o jsonpath='{.items[*].metadata.name}')
+
+            if [ -n "$deployments" ]; then
+                for deploy in $deployments; do
+                    echo -e "${CYAN}  - $deploy 롤아웃 대기 중...${NC}"
+                    if kubectl rollout status deployment/$deploy -n $NAMESPACE --timeout=300s; then
+                        echo -e "${GREEN}  ✓ $deploy 롤아웃 완료${NC}"
+                    else
+                        echo -e "${YELLOW}  ⚠ $deploy 롤아웃 타임아웃 (계속 진행 중일 수 있습니다)${NC}"
+                    fi
+                done
+            fi
         fi
     fi
 

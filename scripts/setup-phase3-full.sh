@@ -362,28 +362,8 @@ EOF
 echo -e "${GREEN}✓ authz-server secret 생성 완료${NC}"
 echo ""
 
-# 8.4 portal-client secret
-echo -e "${YELLOW}4. portal-client secret 생성 중...${NC}"
-PORTAL_NEXTAUTH_SECRET=$(generate_nextauth_secret)
-
-cat > "${K8S_ROOT}/applications/portal-client/secret.yaml" << EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: portal-client-secrets
-  labels:
-    app: portal-client
-type: Opaque
-stringData:
-  NEXT_PUBLIC_API_URL: "http://auth-server:8000"
-  NEXTAUTH_SECRET: "${PORTAL_NEXTAUTH_SECRET}"
-EOF
-
-echo -e "${GREEN}✓ portal-client secret 생성 완료${NC}"
-echo ""
-
-# 8.5 portal-server secret
-echo -e "${YELLOW}5. portal-server secret 생성 중...${NC}"
+# 8.4 portal-server secret
+echo -e "${YELLOW}4. portal-server secret 생성 중...${NC}"
 
 cat > "${K8S_ROOT}/applications/portal-server/secret.yaml" << EOF
 apiVersion: v1
@@ -402,8 +382,8 @@ EOF
 echo -e "${GREEN}✓ portal-server secret 생성 완료${NC}"
 echo ""
 
-# 8.6 my-pick-server secret
-echo -e "${YELLOW}6. my-pick-server secret 생성 중...${NC}"
+# 8.5 my-pick-server secret
+echo -e "${YELLOW}5. my-pick-server secret 생성 중...${NC}"
 
 cat > "${K8S_ROOT}/applications/my-pick-server/secret.yaml" << EOF
 apiVersion: v1
@@ -422,31 +402,11 @@ EOF
 echo -e "${GREEN}✓ my-pick-server secret 생성 완료${NC}"
 echo ""
 
-# 8.7 my-pick-client secret
-echo -e "${YELLOW}7. my-pick-client secret 생성 중...${NC}"
-MYPICK_NEXTAUTH_SECRET=$(generate_nextauth_secret)
-
-cat > "${K8S_ROOT}/applications/my-pick-client/secret.yaml" << EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: my-pick-client-secrets
-  labels:
-    app: my-pick-client
-type: Opaque
-stringData:
-  NEXT_PUBLIC_API_URL: "http://my-pick-server:8200"
-  NEXTAUTH_SECRET: "${MYPICK_NEXTAUTH_SECRET}"
-EOF
-
-echo -e "${GREEN}✓ my-pick-client secret 생성 완료${NC}"
-echo ""
-
 # JWT 키 임시 파일 정리
 rm -rf /tmp/jwt-keys-auth /tmp/jwt-keys-authz
 
-# 8.8 External Service IP 업데이트
-echo -e "${YELLOW}8. External Service IP 업데이트 중...${NC}"
+# 8.6 External Service IP 업데이트
+echo -e "${YELLOW}6. External Service IP 업데이트 중...${NC}"
 
 cat > "${K8S_ROOT}/base/external-mysql.yaml" << EOF
 apiVersion: v1
@@ -513,12 +473,10 @@ echo -e "${BLUE}생성된 파일:${NC}"
 echo -e "${GREEN}✓ krgeobuk-infrastructure/.env${NC}"
 echo -e "${GREEN}✓ applications/auth-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/authz-server/secret.yaml${NC}"
-echo -e "${GREEN}✓ applications/portal-client/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/portal-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/my-pick-server/secret.yaml${NC}"
-echo -e "${GREEN}✓ applications/my-pick-client/secret.yaml${NC}"
-echo -e "${GREEN}✓ base/external-services/external-mysql.yaml${NC}"
-echo -e "${GREEN}✓ base/external-services/external-redis.yaml${NC}"
+echo -e "${GREEN}✓ base/external-mysql.yaml${NC}"
+echo -e "${GREEN}✓ base/external-redis.yaml${NC}"
 
 echo ""
 echo -e "${YELLOW}다음 단계:${NC}"

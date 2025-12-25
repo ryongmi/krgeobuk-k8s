@@ -448,7 +448,7 @@ rm -rf /tmp/jwt-keys-auth /tmp/jwt-keys-authz
 # 8.8 External Service IP 업데이트
 echo -e "${YELLOW}8. External Service IP 업데이트 중...${NC}"
 
-cat > "${K8S_ROOT}/base/external-services/external-mysql.yaml" << EOF
+cat > "${K8S_ROOT}/base/external-mysql.yaml" << EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -471,7 +471,7 @@ spec:
       targetPort: 3310
 EOF
 
-cat > "${K8S_ROOT}/base/external-services/external-redis.yaml" << EOF
+cat > "${K8S_ROOT}/base/external-redis.yaml" << EOF
 apiVersion: v1
 kind: Service
 metadata:

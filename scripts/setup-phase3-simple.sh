@@ -251,7 +251,7 @@ echo -e "${BLUE}3. External Service IP 업데이트 중...${NC}"
 # 3.1 external-mysql.yaml
 echo -e "${YELLOW}  - external-mysql.yaml 업데이트 중...${NC}"
 
-cat > "${K8S_ROOT}/base/external-services/external-mysql.yaml" << EOF
+cat > "${K8S_ROOT}/base/external-mysql.yaml" << EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -279,7 +279,7 @@ echo -e "${GREEN}  ✓ external-mysql.yaml 업데이트 완료${NC}"
 # 3.2 external-redis.yaml
 echo -e "${YELLOW}  - external-redis.yaml 업데이트 중...${NC}"
 
-cat > "${K8S_ROOT}/base/external-services/external-redis.yaml" << EOF
+cat > "${K8S_ROOT}/base/external-redis.yaml" << EOF
 apiVersion: v1
 kind: Service
 metadata:

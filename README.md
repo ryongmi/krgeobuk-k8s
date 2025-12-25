@@ -20,8 +20,8 @@ krgeobuk-infrastructure     krgeobuk-k8s              krgeobuk-deployment
 (인프라 환경)               (K8s 리소스 + 운영)       (배포 오케스트레이션)
         │                         │                           │
         ▼                         ▼                           ▼
-   MySQL, Redis          매니페스트 정의              전체 배포 프로세스
-   외부 인프라           kubectl 직접 조작             이 리포지토리 호출
+   MySQL, Redis          매니페스트 + kubectl 조작     전체 배포 프로세스
+   Jenkins, Verdaccio    운영 스크립트                 이 리포지토리 호출
 ```
 
 **관계**:

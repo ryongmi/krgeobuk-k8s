@@ -29,6 +29,8 @@ krgeobuk 프로젝트의 Kubernetes 매니페스트입니다. Kustomize를 사�
 
 ## 구조
 
+**하이브리드 Kustomize 패턴** 사용 - Base + Overlays로 환경별 배포 관리
+
 ```
 krgeobuk-k8s/
 ├── base/                          # 공통 리소스
@@ -37,8 +39,22 @@ krgeobuk-k8s/
 │   ├── external-redis.yaml       # 외부 Redis 연결
 │   └── kustomization.yaml
 │
-├── applications/                  # 애플리케이션 템플릿
+├── applications/                  # 애플리케이션 (하이브리드 패턴)
 │   ├── auth-server/              # Phase 1: 인증 서버
+│   │   ├── base/                 # 공통 매니페스트
+│   │   │   ├── deployment.yaml
+│   │   │   ├── service.yaml
+│   │   │   ├── configmap.yaml
+│   │   │   └── kustomization.yaml
+│   │   ├── overlays/             # 환경별 설정
+│   │   │   ├── dev/
+│   │   │   │   ├── kustomization.yaml
+│   │   │   │   └── patch-deployment.yaml
+│   │   │   └── prod/
+│   │   │       ├── kustomization.yaml
+│   │   │       └── patch-deployment.yaml
+│   │   └── secret.yaml.template  # Secret 템플릿
+│   │
 │   ├── auth-client/              # Phase 1: 인증 클라이언트
 │   ├── authz-server/             # Phase 1: 권한 서버
 │   ├── portal-client/            # Phase 1: 포털 클라이언트
@@ -47,12 +63,7 @@ krgeobuk-k8s/
 │   ├── my-pick-client/           # Phase 2: MyPick 클라이언트
 │   ├── portal-admin-client/      # Phase 2: 포털 관리자
 │   └── my-pick-admin-client/     # Phase 2: MyPick 관리자
-│   # 각 서비스는 동일한 구조:
-│   #   ├── deployment.yaml
-│   #   ├── service.yaml
-│   #   ├── configmap.yaml
-│   #   ├── secret.yaml.template (백엔드만)
-│   #   └── kustomization.yaml
+│   # 각 서비스는 동일한 하이브리드 구조 사용
 │
 ├── docs/                         # 📚 문서 폴더
 │   ├── README.md                 # 문서 인덱스
@@ -63,32 +74,34 @@ krgeobuk-k8s/
 │       ├── PHASE2_SUMMARY.md
 │       └── PHASE2_CHECKLIST.md
 │
-└── environments/                  # 환경별 설정
-    ├── dev/                      # 개발 환경
-    │   ├── kustomization.yaml    # Phase 1 + Phase 2 통합
-    │   └── patches/              # 9개 서비스 패치
-    │       ├── auth-server-dev.yaml
-    │       ├── auth-client-dev.yaml
-    │       ├── authz-server-dev.yaml
-    │       ├── portal-client-dev.yaml
-    │       ├── portal-server-dev.yaml            # Phase 2
-    │       ├── my-pick-server-dev.yaml           # Phase 2
-    │       ├── my-pick-client-dev.yaml           # Phase 2
-    │       ├── portal-admin-client-dev.yaml      # Phase 2
-    │       └── my-pick-admin-client-dev.yaml     # Phase 2
-    │
-    └── prod/                     # 운영 환경
-        ├── kustomization.yaml    # Phase 1 + Phase 2 통합
-        └── patches/              # 9개 서비스 패치
-            ├── auth-server-prod.yaml
-            ├── auth-client-prod.yaml
-            ├── authz-server-prod.yaml
-            ├── portal-client-prod.yaml
-            ├── portal-server-prod.yaml           # Phase 2
-            ├── my-pick-server-prod.yaml          # Phase 2
-            ├── my-pick-client-prod.yaml          # Phase 2
-            ├── portal-admin-client-prod.yaml     # Phase 2
-            └── my-pick-admin-client-prod.yaml    # Phase 2
+├── environments/                  # 환경 통합 배포
+│   ├── dev/                      # 개발 환경
+│   │   ├── kustomization.yaml    # 모든 서비스 overlays/dev 참조
+│   │   └── ingress.yaml          # Dev Ingress 설정
+│   │
+│   └── prod/                     # 운영 환경
+│       ├── kustomization.yaml    # 모든 서비스 overlays/prod 참조
+│       └── ingress.yaml          # Prod Ingress 설정 (TLS)
+│
+└── scripts/                      # 배포 자동화 스크립트
+    ├── deploy.sh                 # 배포 스크립트
+    ├── rollback.sh               # 롤백 스크립트
+    ├── health-check.sh           # 헬스 체크
+    └── logs.sh                   # 로그 수집
+```
+
+### 배포 옵션
+
+**개별 서비스 배포** (환경별 패치 자동 적용):
+```bash
+kubectl apply -k applications/auth-server/overlays/dev
+kubectl apply -k applications/auth-server/overlays/prod
+```
+
+**전체 환경 배포** (모든 서비스 한 번에):
+```bash
+kubectl apply -k environments/dev
+kubectl apply -k environments/prod
 ```
 
 ## 시작하기

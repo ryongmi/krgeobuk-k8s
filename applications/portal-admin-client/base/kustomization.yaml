@@ -6,9 +6,6 @@ resources:
 - service.yaml
 - configmap.yaml
 
-# Secret은 템플릿만 제공, 실제 secret.yaml은 수동으로 생성
-# - secret.yaml
-
 commonLabels:
-  app: portal-server
+  app: portal-admin-client
   managed-by: kustomize

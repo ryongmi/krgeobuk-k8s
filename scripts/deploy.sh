@@ -29,19 +29,18 @@ usage() {
     echo "서비스:"
     echo "  all                    - 전체 환경 배포 (environments/\$ENV)"
     echo "  infrastructure         - Ingress/cert-manager 설치 안내"
-    echo "  auth-server            - 인증 서버 (개별 배포, 패치 미적용)"
-    echo "  auth-client            - 인증 클라이언트 (개별 배포, 패치 미적용)"
-    echo "  authz-server           - 권한 서버 (개별 배포, 패치 미적용)"
-    echo "  portal-server          - 포털 서버 (개별 배포, 패치 미적용)"
-    echo "  portal-client          - 포털 클라이언트 (개별 배포, 패치 미적용)"
-    echo "  my-pick-server         - MyPick 서버 (개별 배포, 패치 미적용)"
-    echo "  my-pick-client         - MyPick 클라이언트 (개별 배포, 패치 미적용)"
-    echo "  portal-admin-client    - 포털 관리자 클라이언트 (개별 배포, 패치 미적용)"
-    echo "  my-pick-admin-client   - MyPick 관리자 클라이언트 (개별 배포, 패치 미적용)"
+    echo "  auth-server            - 인증 서버"
+    echo "  auth-client            - 인증 클라이언트"
+    echo "  authz-server           - 권한 서버"
+    echo "  portal-server          - 포털 서버"
+    echo "  portal-client          - 포털 클라이언트"
+    echo "  my-pick-server         - MyPick 서버"
+    echo "  my-pick-client         - MyPick 클라이언트"
+    echo "  portal-admin-client    - 포털 관리자 클라이언트"
+    echo "  my-pick-admin-client   - MyPick 관리자 클라이언트"
     echo ""
     echo "참고:"
-    echo "  - 'all' 사용을 권장합니다 (환경별 패치 자동 적용)"
-    echo "  - 개별 서비스 배포 시 환경별 설정이 적용되지 않습니다"
+    echo "  - 개별 서비스 배포 시에도 환경별 패치가 자동 적용됩니다"
     echo ""
     echo "예시:"
     echo "  $0 dev all                    # Dev 환경에 모든 서비스 배포"
@@ -178,11 +177,8 @@ deploy_service() {
         # 전체 환경 배포
         deploy_path="environments/$ENV"
     else
-        # 개별 서비스 배포
-        echo -e "${YELLOW}⚠️  개별 서비스 배포는 환경별 패치가 적용되지 않습니다.${NC}"
-        echo -e "${YELLOW}권장: 전체 배포를 사용하세요 (./scripts/deploy.sh $ENV all)${NC}"
-        echo ""
-        deploy_path="applications/$service"
+        # 개별 서비스 배포 (환경별 패치 적용됨)
+        deploy_path="applications/$service/overlays/$ENV"
     fi
 
     # 경로 확인

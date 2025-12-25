@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: krgeobuk-prod
+
+resources:
+- ../../base
+
+patches:
+- path: patch-deployment.yaml
+
+configMapGenerator:
+- name: portal-client-config
+  behavior: merge
+  literals:
+  - NODE_ENV=production
+  - NEXT_PUBLIC_ENVIRONMENT=production
+  - NEXT_PUBLIC_AUTH_SERVER_URL=http://auth-server/api
+  - NEXT_PUBLIC_AUTHZ_SERVER_URL=http://authz-server/api
+  - NEXT_PUBLIC_PORTAL_SERVER_URL=http://portal-server/api
+  - NEXT_PUBLIC_TOKEN_REFRESH_URL=http://auth-server/api/auth/refresh
+  - NEXT_PUBLIC_PORTAL_CLIENT_URL=https://portal.krgeobuk.com
+  - NEXT_PUBLIC_DEBUG=false
+  - NEXT_PUBLIC_LOG_LEVEL=error
+  - NEXT_PUBLIC_RATE_LIMIT_MAX_ATTEMPTS=30
+  - ALLOWED_ORIGINS=krgeobuk.com,auth.krgeobuk.com,authz.krgeobuk.com,portal.krgeobuk.com
+
+commonLabels:
+  environment: production

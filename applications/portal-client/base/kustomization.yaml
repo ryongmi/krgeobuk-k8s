@@ -6,9 +6,6 @@ resources:
 - service.yaml
 - configmap.yaml
 
-# portal-client는 프론트엔드이므로 Secret 불필요
-# 모든 환경 변수는 NEXT_PUBLIC_로 시작하며 빌드 시 번들에 포함됨
-
 commonLabels:
   app: portal-client
   managed-by: kustomize

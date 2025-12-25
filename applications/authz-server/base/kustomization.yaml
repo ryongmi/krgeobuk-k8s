@@ -6,9 +6,6 @@ resources:
 - service.yaml
 - configmap.yaml
 
-# Secret은 템플릿만 제공, 현재는 사용하지 않음
-# - secret.yaml
-
 commonLabels:
-  app: portal-admin-client
+  app: authz-server
   managed-by: kustomize

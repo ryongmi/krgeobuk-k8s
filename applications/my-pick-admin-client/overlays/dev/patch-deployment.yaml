@@ -15,14 +15,3 @@ spec:
           limits:
             cpu: 150m
             memory: 256Mi
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: my-pick-admin-client-config
-data:
-  NEXT_PUBLIC_ENVIRONMENT: "development"
-  NODE_ENV: "development"
-  NEXT_PUBLIC_ENABLE_DEV_TOOLS: "true"  # dev는 개발 도구 활성화
-  NEXT_PUBLIC_ENABLE_MOCK_DATA: "false"

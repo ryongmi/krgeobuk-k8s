@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: krgeobuk-dev
+
+resources:
+- ../../base
+
+patches:
+- path: patch-deployment.yaml
+
+configMapGenerator:
+- name: my-pick-client-config
+  behavior: merge
+  literals:
+  - NEXT_PUBLIC_DEBUG=true
+  - NEXT_PUBLIC_LOG_LEVEL=debug
+  - NEXT_PUBLIC_ENVIRONMENT=development
+  - NODE_ENV=development
+
+commonLabels:
+  environment: development

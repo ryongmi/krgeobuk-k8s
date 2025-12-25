@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: krgeobuk-prod
+
+resources:
+- ../../base
+
+patches:
+- path: patch-deployment.yaml
+
+configMapGenerator:
+- name: auth-server-config
+  behavior: merge
+  literals:
+  - NODE_ENV=production
+  - MYSQL_DATABASE=auth_prod
+  - CORS_ORIGINS=https://auth.krgeobuk.com,https://portal.krgeobuk.com,https://admin.krgeobuk.com
+  - ALLOWED_REDIRECT_DOMAINS=krgeobuk.com,auth.krgeobuk.com,portal.krgeobuk.com,admin.krgeobuk.com
+  - ALLOWED_REDIRECT_PROTOCOLS=https
+  - AUTH_CLIENT_URL=https://auth.krgeobuk.com
+  - PORTAL_CLIENT_URL=https://portal.krgeobuk.com
+  - GOOGLE_REDIRECT_URL=https://auth.krgeobuk.com/api/oauth/login-google/callback
+  - NAVER_REDIRECT_URL=https://auth.krgeobuk.com/api/oauth/login-naver/callback
+  - JWT_COOKIE_DOMAIN=.krgeobuk.com
+  - EMAIL_VERIFICATION_BASE_URL=https://auth.krgeobuk.com
+
+commonLabels:
+  environment: production

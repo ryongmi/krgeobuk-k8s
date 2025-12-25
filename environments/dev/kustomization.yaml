@@ -6,127 +6,18 @@ namespace: krgeobuk-dev
 resources:
 - ../../base
 # Phase 1 Services
-- ../../applications/auth-server
-- ../../applications/auth-client
-- ../../applications/authz-server
-- ../../applications/portal-client
+- ../../applications/auth-server/overlays/dev
+- ../../applications/auth-client/overlays/dev
+- ../../applications/authz-server/overlays/dev
+- ../../applications/portal-client/overlays/dev
 # Phase 2 Services
-- ../../applications/portal-server
-- ../../applications/my-pick-server
-- ../../applications/my-pick-client
-- ../../applications/portal-admin-client
-- ../../applications/my-pick-admin-client
-
-patches:
-# Phase 1 Patches
-- path: patches/auth-server-dev.yaml
-- path: patches/auth-client-dev.yaml
-- path: patches/authz-server-dev.yaml
-- path: patches/portal-client-dev.yaml
-# Phase 2 Patches
-- path: patches/portal-server-dev.yaml
-- path: patches/my-pick-server-dev.yaml
-- path: patches/my-pick-client-dev.yaml
-- path: patches/portal-admin-client-dev.yaml
-- path: patches/my-pick-admin-client-dev.yaml
-
-configMapGenerator:
-# ========================================
-# auth-server 개발 환경 설정
-# ========================================
-- name: auth-server-config
-  behavior: merge
-  literals:
-  # 환경 설정
-  - NODE_ENV=development
-
-  # MySQL 설정 (개발 DB)
-  - MYSQL_DATABASE=auth_dev
-
-  # CORS 설정 (개발 환경 URL)
-  - CORS_ORIGINS=http://localhost:3000,http://localhost:3200,http://localhost:3210,http://auth-client:3000
-  - ALLOWED_REDIRECT_DOMAINS=localhost,localhost:3000,localhost:3200,localhost:3210,auth-client
-
-  # 클라이언트 URL (Kubernetes Service 이름)
-  - AUTH_CLIENT_URL=http://auth-client:3000
-  - PORTAL_CLIENT_URL=http://portal-client:3200
-
-  # OAuth 리다이렉트 URL (개발 환경)
-  - GOOGLE_REDIRECT_URL=http://localhost:8000/api/oauth/login-google/callback
-  - NAVER_REDIRECT_URL=http://localhost:8000/api/oauth/login-naver/callback
-
-  # JWT 쿠키 도메인
-  - JWT_COOKIE_DOMAIN=.localhost
-
-  # Email 인증 Base URL
-  - EMAIL_VERIFICATION_BASE_URL=http://localhost:3000
-
-# ========================================
-# auth-client 개발 환경 설정
-# ========================================
-- name: auth-client-config
-  behavior: merge
-  literals:
-  # 환경 설정
-  - NODE_ENV=development
-  - NEXT_PUBLIC_ENVIRONMENT=development
-
-  # 서버 URL (Kubernetes Service 이름)
-  - NEXT_PUBLIC_AUTH_SERVER_URL=http://auth-server/api
-
-  # SSO 도메인
-  - NEXT_PUBLIC_DOMAIN=localhost
-
-  # 앱 URL
-  - NEXT_PUBLIC_APP_URL=http://localhost:3000
-  - NEXT_PUBLIC_PORTAL_CLIENT_URL=http://localhost:3200
-  - NEXT_PUBLIC_PORTAL_ADMIN_URL=http://localhost:3210
-
-  # 디버그 모드 활성화
-  # - NEXT_PUBLIC_DEBUG=true
-  # - NEXT_PUBLIC_LOG_LEVEL=debug
-
-# ========================================
-# authz-server 개발 환경 설정
-# ========================================
-- name: authz-server-config
-  behavior: merge
-  literals:
-  # 환경 설정
-  - NODE_ENV=development
-
-  # MySQL 설정 (개발 DB)
-  - MYSQL_DATABASE=authz_dev
-
-  # CORS 설정 (개발 환경 URL)
-  - CORS_ORIGINS=http://localhost:3000,http://localhost:3200,http://localhost:3210,http://localhost:3300,http://localhost:3310,http://auth-client,http://portal-client
-
-  # 로깅
-  - LOG_LEVEL=debug
-
-  # 성능 튜닝 (개발 환경은 짧은 TTL)
-  - PERMISSION_CACHE_TTL=300
-
-# ========================================
-# portal-client 개발 환경 설정
-# ========================================
-- name: portal-client-config
-  behavior: merge
-  literals:
-  # 환경 설정
-  - NODE_ENV=development
-  - NEXT_PUBLIC_ENVIRONMENT=development
-
-  # 서버 URL (Kubernetes Service 이름)
-  - NEXT_PUBLIC_AUTH_SERVER_URL=http://auth-server/api
-  - NEXT_PUBLIC_AUTHZ_SERVER_URL=http://authz-server/api
-  - NEXT_PUBLIC_PORTAL_SERVER_URL=http://portal-server/api
-  - NEXT_PUBLIC_TOKEN_REFRESH_URL=http://auth-server/api/auth/refresh
-  - NEXT_PUBLIC_PORTAL_CLIENT_URL=http://localhost:3200
-
-  # 디버그 설정
-  - NEXT_PUBLIC_DEBUG=true
-  - NEXT_PUBLIC_LOG_LEVEL=debug
+- ../../applications/portal-server/overlays/dev
+- ../../applications/my-pick-server/overlays/dev
+- ../../applications/my-pick-client/overlays/dev
+- ../../applications/portal-admin-client/overlays/dev
+- ../../applications/my-pick-admin-client/overlays/dev
+# Ingress
+- ingress.yaml
 
 commonLabels:
   environment: development

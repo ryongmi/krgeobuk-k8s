@@ -6,12 +6,12 @@ Kubernetes 배포, 롤백, 모니터링을 위한 자동화 스크립트 모음�
 
 ## 📁 스크립트 목록
 
-| 스크립트 | 설명 | 주요 기능 |
-|---------|------|----------|
-| `deploy.sh` | 환경별 서비스 배포 | Kustomize 기반 배포, 롤아웃 상태 확인 |
-| `rollback.sh` | 이전 버전으로 롤백 | Deployment 롤백, Revision 관리 |
-| `health-check.sh` | 서비스 헬스 체크 | Pod/Service 상태, 리소스 사용량 |
-| `logs.sh` | Pod 로그 수집 | 실시간 스트리밍, 로그 필터링 |
+| 스크립트          | 설명               | 주요 기능                             |
+| ----------------- | ------------------ | ------------------------------------- |
+| `deploy.sh`       | 환경별 서비스 배포 | Kustomize 기반 배포, 롤아웃 상태 확인 |
+| `rollback.sh`     | 이전 버전으로 롤백 | Deployment 롤백, Revision 관리        |
+| `health-check.sh` | 서비스 헬스 체크   | Pod/Service 상태, 리소스 사용량       |
+| `logs.sh`         | Pod 로그 수집      | 실시간 스트리밍, 로그 필터링          |
 
 ---
 
@@ -237,19 +237,23 @@ kubectl get deployment auth-server-deployment -n krgeobuk-dev -o jsonpath='{.met
 #### 체크 항목
 
 1. **Pod 상태**
+
    - Running/Ready 상태
    - Restart 횟수
    - Container 상태
 
 2. **Service 엔드포인트**
+
    - Endpoint IP 확인
    - Service 연결 상태
 
 3. **Deployment 상태**
+
    - Desired vs Ready 비교
    - Available replicas
 
 4. **리소스 사용량**
+
    - 노드 리소스 (CPU, Memory)
    - Pod 리소스 사용량
 
@@ -313,15 +317,15 @@ Pod 로그를 조회하고 분석합니다.
 
 #### 옵션
 
-| 옵션 | 설명 |
-|------|------|
-| `-f, --follow` | 실시간 로그 스트리밍 |
-| `-p, --previous` | 이전 컨테이너 로그 (crashed pod) |
-| `--tail N` | 마지막 N줄만 표시 (기본: 100) |
-| `--timestamps` | 타임스탬프 표시 |
-| `--all-pods` | 모든 Pod 로그 병합 |
-| `--pod <name>` | 특정 Pod만 조회 |
-| `--container <name>` | 특정 컨테이너만 조회 |
+| 옵션                 | 설명                              |
+| -------------------- | --------------------------------- |
+| `-f, --follow`       | 실시간 로그 스트리밍              |
+| `-p, --previous`     | 이전 컨테이너 로그 (crashed pod)  |
+| `--tail N`           | 마지막 N줄만 표시 (기본: 100)     |
+| `--timestamps`       | 타임스탬프 표시                   |
+| `--all-pods`         | 모든 Pod 로그 병합                |
+| `--pod <name>`       | 특정 Pod만 조회                   |
+| `--container <name>` | 특정 컨테이너만 조회              |
 | `--since <duration>` | 특정 시간 이후 로그 (예: 1h, 30m) |
 
 #### 예시
@@ -484,11 +488,13 @@ done
 ### 문제 1: kubectl 연결 실패
 
 **증상**:
+
 ```
 오류: Kubernetes 클러스터에 연결할 수 없습니다.
 ```
 
 **해결**:
+
 ```bash
 # 클러스터 정보 확인
 kubectl cluster-info
@@ -506,11 +512,13 @@ echo $KUBECONFIG
 ### 문제 2: 배포 타임아웃
 
 **증상**:
+
 ```
 ⚠ auth-server-deployment 롤아웃 타임아웃
 ```
 
 **해결**:
+
 ```bash
 # 1. Pod 상태 확인
 kubectl get pods -n krgeobuk-dev -l app=auth-server
@@ -532,11 +540,13 @@ kubectl get events -n krgeobuk-dev | grep -i pull
 ### 문제 3: Secret 없음
 
 **증상**:
+
 ```
 Error: secrets "auth-server-secrets" not found
 ```
 
 **해결**:
+
 ```bash
 # 1. Secret 존재 확인
 kubectl get secrets -n krgeobuk-dev
@@ -552,11 +562,13 @@ kubectl get secret auth-server-secrets -n krgeobuk-dev
 ### 문제 4: Pod CrashLoopBackOff
 
 **증상**:
+
 ```
 auth-server-deployment-abc123   0/1     CrashLoopBackOff
 ```
 
 **해결**:
+
 ```bash
 # 1. 현재 로그 확인
 ./scripts/logs.sh dev auth-server
@@ -578,11 +590,13 @@ kubectl exec -it <pod-name> -n krgeobuk-dev -- env
 ### 문제 5: Service 접근 불가
 
 **증상**:
+
 ```
 ⚠ Endpoints가 없습니다.
 ```
 
 **해결**:
+
 ```bash
 # 1. Service 확인
 kubectl get svc -n krgeobuk-dev
@@ -643,6 +657,7 @@ watch -n 600 ./scripts/health-check.sh dev
 ### 4. 롤백 기준
 
 다음 상황에서 즉시 롤백:
+
 - Pod가 5분 이상 Running 상태로 전환되지 않음
 - Restart 횟수가 3회 이상
 - 에러 로그가 초당 10개 이상 발생

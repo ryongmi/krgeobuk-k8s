@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: krgeobuk-dev
 
 resources:
+- namespace.yaml
 - ../../base
 # Phase 1 Services
 - ../../applications/auth-server/overlays/dev
@@ -19,5 +20,6 @@ resources:
 # Ingress
 - ingress.yaml
 
-commonLabels:
-  environment: development
+labels:
+- pairs:
+    environment: development

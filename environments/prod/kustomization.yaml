@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: krgeobuk-prod
 
 resources:
+- namespace.yaml
 - ../../base
 # Phase 1 Services
 - ../../applications/auth-server/overlays/prod
@@ -19,5 +20,6 @@ resources:
 # Ingress
 - ingress.yaml
 
-commonLabels:
-  environment: production
+labels:
+- pairs:
+    environment: production

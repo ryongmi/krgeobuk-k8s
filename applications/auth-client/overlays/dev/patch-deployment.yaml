@@ -8,6 +8,8 @@ spec:
     spec:
       containers:
       - name: auth-client
+        image: auth-client:latest  # 로컬 이미지 (레지스트리 없음)
+        imagePullPolicy: Never  # 로컬 이미지만 사용
         resources:
           requests:
             cpu: 50m  # dev는 최소 리소스

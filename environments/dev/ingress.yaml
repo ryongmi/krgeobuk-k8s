@@ -14,7 +14,7 @@ metadata:
 
     # CORS 설정 (클라이언트 서브도메인 허용)
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://portal.dev.krgeobuk.com, https://admin.dev.krgeobuk.com, https://mypick.dev.krgeobuk.com, https://mypick-admin.dev.krgeobuk.com"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://portal.dev.krgeobuk.com, https://portal-admin.dev.krgeobuk.com, https://mypick.dev.krgeobuk.com, https://mypick-admin.dev.krgeobuk.com"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
@@ -142,11 +142,11 @@ spec:
   # TLS 설정
   # tls:
   # - hosts:
-  #   - admin.dev.krgeobuk.com
+  #   - portal-admin.dev.krgeobuk.com
   #   secretName: portal-admin-client-dev-tls
 
   rules:
-  - host: admin.dev.krgeobuk.com
+  - host: portal-admin.dev.krgeobuk.com
     http:
       paths:
       - path: /
@@ -230,7 +230,7 @@ spec:
 # ---------------
 # 클라이언트 (서브도메인):
 #   - portal.dev.krgeobuk.com       → portal-client (Next.js)
-#   - admin.dev.krgeobuk.com        → portal-admin-client (Next.js)
+#   - portal-admin.dev.krgeobuk.com → portal-admin-client (Next.js)
 #   - mypick.dev.krgeobuk.com       → my-pick-client (Next.js)
 #   - mypick-admin.dev.krgeobuk.com → my-pick-admin-client (Next.js)
 #
@@ -287,10 +287,10 @@ spec:
 #   dev.krgeobuk.com           → <Ingress Controller IP>
 #
 # CNAME 레코드 (또는 A 레코드):
-#   api.dev.krgeobuk.com       → dev.krgeobuk.com (또는 같은 IP)
-#   portal.dev.krgeobuk.com    → dev.krgeobuk.com (또는 같은 IP)
-#   admin.dev.krgeobuk.com     → dev.krgeobuk.com (또는 같은 IP)
-#   mypick.dev.krgeobuk.com    → dev.krgeobuk.com (또는 같은 IP)
+#   api.dev.krgeobuk.com          → dev.krgeobuk.com (또는 같은 IP)
+#   portal.dev.krgeobuk.com       → dev.krgeobuk.com (또는 같은 IP)
+#   portal-admin.dev.krgeobuk.com → dev.krgeobuk.com (또는 같은 IP)
+#   mypick.dev.krgeobuk.com       → dev.krgeobuk.com (또는 같은 IP)
 #   mypick-admin.dev.krgeobuk.com → dev.krgeobuk.com (또는 같은 IP)
 #
 # 또는 Wildcard:
@@ -303,7 +303,7 @@ spec:
 #
 # 192.168.1.100 api.dev.krgeobuk.com
 # 192.168.1.100 portal.dev.krgeobuk.com
-# 192.168.1.100 admin.dev.krgeobuk.com
+# 192.168.1.100 portal-admin.dev.krgeobuk.com
 # 192.168.1.100 mypick.dev.krgeobuk.com
 # 192.168.1.100 mypick-admin.dev.krgeobuk.com
 #

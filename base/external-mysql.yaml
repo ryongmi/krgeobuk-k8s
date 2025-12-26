@@ -4,17 +4,8 @@ metadata:
   name: krgeobuk-mysql
 spec:
   type: ExternalName
-  externalName: 127.0.0.1
+  externalName: host.docker.internal
   ports:
-    - name: mysql-auth
-      port: 3307
-      targetPort: 3307
-    - name: mysql-authz
-      port: 3308
-      targetPort: 3308
-    - name: mysql-portal
-      port: 3309
-      targetPort: 3309
-    - name: mysql-mypick
-      port: 3310
-      targetPort: 3310
+    - name: mysql
+      port: 3306
+      targetPort: 3306

@@ -1,21 +1,23 @@
 # Development Environment Ingress
-# 모든 서비스를 하나의 Ingress로 관리
+# API 서브도메인 패턴 사용 (api.dev.krgeobuk.com)
+# 클라이언트는 서브도메인으로 분리
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: krgeobuk-dev-ingress
+  name: krgeobuk-api-ingress
   namespace: krgeobuk-dev
   annotations:
     # NGINX Ingress Controller 설정
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
 
-    # CORS 설정
+    # CORS 설정 (클라이언트 서브도메인 허용)
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://portal.dev.krgeobuk.com, https://admin.dev.krgeobuk.com, https://mypick.dev.krgeobuk.com, https://mypick-admin.dev.krgeobuk.com"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
 
     # 타임아웃 설정
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
@@ -25,36 +27,41 @@ metadata:
     # 요청 크기 제한
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 
-    # SSL 리다이렉트 비활성화 (Dev 환경)
+    # SSL 리다이렉트 (Dev 환경은 선택적)
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 
-    # cert-manager 설정 (선택사항 - 도메인이 있을 경우)
+    # cert-manager 설정 (도메인 인증서 자동 발급)
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
 
 spec:
   ingressClassName: nginx
 
-  # TLS 설정 (도메인이 있을 경우 활성화)
+  # TLS 설정 (HTTPS 사용 시 활성화)
   # tls:
   # - hosts:
-  #   - dev.krgeobuk.com
-  #   secretName: krgeobuk-dev-tls
+  #   - api.dev.krgeobuk.com
+  #   secretName: api-dev-krgeobuk-tls
 
   rules:
-  # 기본 호스트 (IP 또는 도메인)
-  - host: dev.krgeobuk.local  # 로컬 테스트용 호스트명 (또는 실제 도메인)
+  # =============================================================================
+  # API 서브도메인: api.dev.krgeobuk.com
+  # 모든 백엔드 API 서비스를 경로로 구분
+  # =============================================================================
+  - host: api.dev.krgeobuk.com
     http:
       paths:
-      # auth-server (포트 8000)
+      # auth-server: /auth/*
+      # 예: api.dev.krgeobuk.com/auth/login
       - path: /auth(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: auth-server
             port:
-              number: 8000
+              number: 80
 
-      # authz-server (포트 8100)
+      # authz-server: /authz/*
+      # 예: api.dev.krgeobuk.com/authz/permissions
       - path: /authz(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
@@ -63,8 +70,9 @@ spec:
             port:
               number: 8100
 
-      # portal-server (포트 8200)
-      - path: /portal-api(/|$)(.*)
+      # portal-server: /portal/*
+      # 예: api.dev.krgeobuk.com/portal/users
+      - path: /portal(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
@@ -72,8 +80,9 @@ spec:
             port:
               number: 8200
 
-      # my-pick-server (포트 8300)
-      - path: /mypick-api(/|$)(.*)
+      # my-pick-server: /mypick/*
+      # 예: api.dev.krgeobuk.com/mypick/items
+      - path: /mypick(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
@@ -81,68 +90,236 @@ spec:
             port:
               number: 8300
 
-      # my-pick-client (포트 3300)
-      - path: /mypick(/|$)(.*)
-        pathType: ImplementationSpecific
+---
+# =============================================================================
+# 클라이언트용 Ingress (개별 서브도메인)
+# =============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: krgeobuk-portal-client-ingress
+  namespace: krgeobuk-dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+
+spec:
+  ingressClassName: nginx
+
+  # TLS 설정
+  # tls:
+  # - hosts:
+  #   - portal.dev.krgeobuk.com
+  #   secretName: portal-client-dev-tls
+
+  rules:
+  - host: portal.dev.krgeobuk.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: portal-client
+            port:
+              number: 3200
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: krgeobuk-admin-client-ingress
+  namespace: krgeobuk-dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+
+spec:
+  ingressClassName: nginx
+
+  # TLS 설정
+  # tls:
+  # - hosts:
+  #   - admin.dev.krgeobuk.com
+  #   secretName: portal-admin-client-dev-tls
+
+  rules:
+  - host: admin.dev.krgeobuk.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: portal-admin-client
+            port:
+              number: 3210
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: krgeobuk-mypick-client-ingress
+  namespace: krgeobuk-dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+
+spec:
+  ingressClassName: nginx
+
+  # TLS 설정
+  # tls:
+  # - hosts:
+  #   - mypick.dev.krgeobuk.com
+  #   secretName: mypick-client-dev-tls
+
+  rules:
+  - host: mypick.dev.krgeobuk.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: my-pick-client
             port:
               number: 3300
 
-      # portal-admin-client (포트 3310)
-      - path: /portal-admin(/|$)(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: portal-admin-client
-            port:
-              number: 3310
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: krgeobuk-mypick-admin-client-ingress
+  namespace: krgeobuk-dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
 
-      # my-pick-admin-client (포트 3320)
-      - path: /mypick-admin(/|$)(.*)
-        pathType: ImplementationSpecific
+spec:
+  ingressClassName: nginx
+
+  # TLS 설정
+  # tls:
+  # - hosts:
+  #   - mypick-admin.dev.krgeobuk.com
+  #   secretName: mypick-admin-client-dev-tls
+
+  rules:
+  - host: mypick-admin.dev.krgeobuk.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: my-pick-admin-client
             port:
-              number: 3320
-
-      # 기본 경로 - portal-client (포트 3000)
-      - path: /(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: portal-client
-            port:
-              number: 3000
+              number: 3310
 
 ---
-# 서비스별 개별 Ingress (선택사항)
-# 서브도메인을 사용하는 경우 활성화
-
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: auth-server-ingress
-#   namespace: krgeobuk-dev
-#   annotations:
-#     nginx.ingress.kubernetes.io/rewrite-target: /
-#     cert-manager.io/cluster-issuer: "letsencrypt-staging"
-# spec:
-#   ingressClassName: nginx
-#   tls:
-#   - hosts:
-#     - auth-dev.krgeobuk.com
-#     secretName: auth-server-dev-tls
-#   rules:
-#   - host: auth-dev.krgeobuk.com
-#     http:
-#       paths:
-#       - path: /
-#         pathType: Prefix
-#         backend:
-#           service:
-#             name: auth-server
-#             port:
-#               number: 8000
+# =============================================================================
+# Ingress 사용 가이드
+# =============================================================================
+#
+# 📋 도메인 구조:
+# ---------------
+# 클라이언트 (서브도메인):
+#   - portal.dev.krgeobuk.com       → portal-client (Next.js)
+#   - admin.dev.krgeobuk.com        → portal-admin-client (Next.js)
+#   - mypick.dev.krgeobuk.com       → my-pick-client (Next.js)
+#   - mypick-admin.dev.krgeobuk.com → my-pick-admin-client (Next.js)
+#
+# API (api 서브도메인 + 경로):
+#   - api.dev.krgeobuk.com/auth/*   → auth-server (NestJS)
+#   - api.dev.krgeobuk.com/authz/*  → authz-server (NestJS)
+#   - api.dev.krgeobuk.com/portal/* → portal-server (NestJS)
+#   - api.dev.krgeobuk.com/mypick/* → my-pick-server (NestJS)
+#
+# 📝 API 호출 예시:
+# -----------------
+# // portal-client에서 API 호출
+# const response = await fetch('https://api.dev.krgeobuk.com/auth/login', {
+#   method: 'POST',
+#   credentials: 'include',
+#   headers: { 'Content-Type': 'application/json' },
+#   body: JSON.stringify({ username, password })
+# });
+#
+# // Next.js 자체 API (헬스체크)
+# // pages/api/health.ts → https://portal.dev.krgeobuk.com/api/health
+# export default function handler(req, res) {
+#   res.status(200).json({ status: 'ok' })
+# }
+#
+# 🔒 HTTPS/TLS 설정:
+# ------------------
+# 1. cert-manager 설치:
+#    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+#
+# 2. ClusterIssuer 생성:
+#    apiVersion: cert-manager.io/v1
+#    kind: ClusterIssuer
+#    metadata:
+#      name: letsencrypt-staging
+#    spec:
+#      acme:
+#        server: https://acme-staging-v02.api.letsencrypt.org/directory
+#        email: your-email@example.com
+#        privateKeySecretRef:
+#          name: letsencrypt-staging
+#        solvers:
+#        - http01:
+#            ingress:
+#              class: nginx
+#
+# 3. Ingress의 tls 섹션과 cert-manager annotation 주석 해제
+#
+# 🌐 DNS 설정:
+# ------------
+# dev.krgeobuk.com의 DNS에 다음 레코드 추가:
+#
+# A 레코드:
+#   dev.krgeobuk.com           → <Ingress Controller IP>
+#
+# CNAME 레코드 (또는 A 레코드):
+#   api.dev.krgeobuk.com       → dev.krgeobuk.com (또는 같은 IP)
+#   portal.dev.krgeobuk.com    → dev.krgeobuk.com (또는 같은 IP)
+#   admin.dev.krgeobuk.com     → dev.krgeobuk.com (또는 같은 IP)
+#   mypick.dev.krgeobuk.com    → dev.krgeobuk.com (또는 같은 IP)
+#   mypick-admin.dev.krgeobuk.com → dev.krgeobuk.com (또는 같은 IP)
+#
+# 또는 Wildcard:
+#   *.dev.krgeobuk.com         → <Ingress Controller IP>
+#
+# 🧪 로컬 테스트 (/etc/hosts):
+# ----------------------------
+# # Windows: C:\Windows\System32\drivers\etc\hosts
+# # Linux/Mac: /etc/hosts
+#
+# 192.168.1.100 api.dev.krgeobuk.com
+# 192.168.1.100 portal.dev.krgeobuk.com
+# 192.168.1.100 admin.dev.krgeobuk.com
+# 192.168.1.100 mypick.dev.krgeobuk.com
+# 192.168.1.100 mypick-admin.dev.krgeobuk.com
+#
+# 📦 배포:
+# --------
+# kubectl apply -f environments/dev/ingress.yaml
+#
+# 🔍 확인:
+# --------
+# kubectl get ingress -n krgeobuk-dev
+# kubectl describe ingress krgeobuk-api-ingress -n krgeobuk-dev
+#
+# 🐛 트러블슈팅:
+# --------------
+# # Ingress Controller 로그
+# kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+#
+# # 특정 Ingress 이벤트
+# kubectl get events -n krgeobuk-dev --sort-by='.lastTimestamp'

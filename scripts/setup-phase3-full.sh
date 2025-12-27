@@ -408,56 +408,104 @@ rm -rf /tmp/jwt-keys-auth /tmp/jwt-keys-authz
 # 8.6 External Service IP 업데이트
 echo -e "${YELLOW}6. External Service IP 업데이트 중...${NC}"
 
+# Service + Endpoints 방식으로 수정 (k3s Linux 호환)
 cat > "${K8S_ROOT}/base/external-mysql.yaml" << EOF
+# ========================================
+# 기존 코드 (Docker Desktop 전용, k3s Linux 미지원)
+# ========================================
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: krgeobuk-mysql
+# spec:
+#   type: ExternalName
+#   externalName: host.docker.internal  # k3s Linux에는 이 DNS가 없음
+#   ports:
+#     - name: mysql
+#       port: 3306
+#       targetPort: 3306
+
+# ========================================
+# 수정된 코드 (k3s Linux 환경용)
+# Service + Endpoints 방식으로 호스트 Docker Compose DB 접근
+# ========================================
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: krgeobuk-mysql
 spec:
-  type: ExternalName
-  externalName: ${EXTERNAL_MYSQL_IP}
+  type: ClusterIP
+  clusterIP: None  # Headless service
   ports:
-    - name: mysql-auth
-      port: 3307
-      targetPort: 3307
-    - name: mysql-authz
-      port: 3308
-      targetPort: 3308
-    - name: mysql-portal
-      port: 3309
-      targetPort: 3309
-    - name: mysql-mypick
-      port: 3310
-      targetPort: 3310
+  - name: mysql
+    port: 3306
+    targetPort: 3306
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-mysql
+subsets:
+- addresses:
+  - ip: ${EXTERNAL_MYSQL_IP}  # 호스트 IP (변경 필요 시 여기만 수정)
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
 EOF
 
 cat > "${K8S_ROOT}/base/external-redis.yaml" << EOF
-apiVersion: v1
-kind: Service
-metadata:
-  name: krgeobuk-redis-auth
-spec:
-  type: ExternalName
-  externalName: ${EXTERNAL_REDIS_AUTH_IP}
-  ports:
-    - name: redis
-      port: 6380
-      targetPort: 6380
+# ========================================
+# 기존 코드 (Docker Desktop 전용, k3s Linux 미지원)
+# ========================================
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: krgeobuk-redis
+# spec:
+#   type: ExternalName
+#   externalName: host.docker.internal  # k3s Linux에는 이 DNS가 없음
+#   ports:
+#     - name: redis
+#       port: 6379
+#       targetPort: 6379
+
+# ========================================
+# 수정된 코드 (k3s Linux 환경용)
+# Service + Endpoints 방식으로 호스트 Docker Compose Redis 접근
+# ========================================
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: krgeobuk-redis-authz
+  name: krgeobuk-redis
 spec:
-  type: ExternalName
-  externalName: ${EXTERNAL_REDIS_AUTHZ_IP}
+  type: ClusterIP
+  clusterIP: None  # Headless service
   ports:
-    - name: redis
-      port: 6381
-      targetPort: 6381
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-redis
+subsets:
+- addresses:
+  - ip: ${EXTERNAL_MYSQL_IP}  # 호스트 IP (MySQL과 동일 호스트)
+  ports:
+  - name: redis
+    port: 6379
+    protocol: TCP
 EOF
 
-echo -e "${GREEN}✓ External Service IP 업데이트 완료${NC}"
+echo -e "${GREEN}✓ External Service IP 업데이트 완료 (Service + Endpoints 방식)${NC}"
 echo ""
 
 #####################################################################

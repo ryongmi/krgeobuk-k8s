@@ -15,7 +15,7 @@ configMapGenerator:
   literals:
   - NODE_ENV=development
   - MYSQL_DATABASE=authz_dev
-  - CORS_ORIGINS=http://localhost:3000,http://localhost:3200,http://localhost:3210,http://localhost:3300,http://localhost:3310,http://auth-client,http://portal-client
+  - CORS_ORIGINS=http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io,http://mypick.192.168.0.28.nip.io,http://mypick-admin.192.168.0.28.nip.io
   - LOG_LEVEL=debug
   - PERMISSION_CACHE_TTL=300
 

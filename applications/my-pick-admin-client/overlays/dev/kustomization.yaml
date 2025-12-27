@@ -13,8 +13,13 @@ configMapGenerator:
 - name: my-pick-admin-client-config
   behavior: merge
   literals:
-  - NEXT_PUBLIC_ENVIRONMENT=development
   - NODE_ENV=development
+  - NEXT_PUBLIC_ENVIRONMENT=development
+  - NEXT_PUBLIC_AUTH_SERVER_URL=http://api.192.168.0.28.nip.io/auth
+  - NEXT_PUBLIC_AUTHZ_SERVER_URL=http://api.192.168.0.28.nip.io/authz
+  - NEXT_PUBLIC_MY_PICK_SERVER_URL=http://api.192.168.0.28.nip.io/mypick
+  - NEXT_PUBLIC_TOKEN_REFRESH_URL=http://api.192.168.0.28.nip.io/auth/auth/refresh
+  - NEXT_PUBLIC_MY_PICK_ADMIN_CLIENT_URL=http://mypick-admin.192.168.0.28.nip.io
   - NEXT_PUBLIC_ENABLE_DEV_TOOLS=true
   - NEXT_PUBLIC_ENABLE_MOCK_DATA=false
 

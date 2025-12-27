@@ -15,14 +15,14 @@ configMapGenerator:
   literals:
   - NODE_ENV=development
   - MYSQL_DATABASE=auth_dev
-  - CORS_ORIGINS=http://localhost:3000,http://localhost:3200,http://localhost:3210,http://auth-client:3000
-  - ALLOWED_REDIRECT_DOMAINS=localhost,localhost:3000,localhost:3200,localhost:3210,auth-client
-  - AUTH_CLIENT_URL=http://auth-client:3000
-  - PORTAL_CLIENT_URL=http://portal-client:3200
-  - GOOGLE_REDIRECT_URL=http://localhost:8000/api/oauth/login-google/callback
-  - NAVER_REDIRECT_URL=http://localhost:8000/api/oauth/login-naver/callback
-  - JWT_COOKIE_DOMAIN=.localhost
-  - EMAIL_VERIFICATION_BASE_URL=http://localhost:3000
+  - CORS_ORIGINS=http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io,http://mypick.192.168.0.28.nip.io,http://mypick-admin.192.168.0.28.nip.io
+  - ALLOWED_REDIRECT_DOMAINS=192.168.0.28.nip.io,portal.192.168.0.28.nip.io,portal-admin.192.168.0.28.nip.io,mypick.192.168.0.28.nip.io,mypick-admin.192.168.0.28.nip.io
+  - AUTH_CLIENT_URL=http://portal.192.168.0.28.nip.io
+  - PORTAL_CLIENT_URL=http://portal.192.168.0.28.nip.io
+  - GOOGLE_REDIRECT_URL=http://api.192.168.0.28.nip.io/auth/oauth/login-google/callback
+  - NAVER_REDIRECT_URL=http://api.192.168.0.28.nip.io/auth/oauth/login-naver/callback
+  - JWT_COOKIE_DOMAIN=.192.168.0.28.nip.io
+  - EMAIL_VERIFICATION_BASE_URL=http://portal.192.168.0.28.nip.io
 
 commonLabels:
   environment: development

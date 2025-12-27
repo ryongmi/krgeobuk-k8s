@@ -15,11 +15,11 @@ configMapGenerator:
   literals:
   - NODE_ENV=development
   - NEXT_PUBLIC_ENVIRONMENT=development
-  - NEXT_PUBLIC_AUTH_SERVER_URL=http://auth-server/api
-  - NEXT_PUBLIC_AUTHZ_SERVER_URL=http://authz-server/api
-  - NEXT_PUBLIC_PORTAL_SERVER_URL=http://portal-server/api
-  - NEXT_PUBLIC_TOKEN_REFRESH_URL=http://auth-server/api/auth/refresh
-  - NEXT_PUBLIC_PORTAL_CLIENT_URL=http://localhost:3200
+  - NEXT_PUBLIC_AUTH_SERVER_URL=http://api.192.168.0.28.nip.io/auth
+  - NEXT_PUBLIC_AUTHZ_SERVER_URL=http://api.192.168.0.28.nip.io/authz
+  - NEXT_PUBLIC_PORTAL_SERVER_URL=http://api.192.168.0.28.nip.io/portal
+  - NEXT_PUBLIC_TOKEN_REFRESH_URL=http://api.192.168.0.28.nip.io/auth/auth/refresh
+  - NEXT_PUBLIC_PORTAL_CLIENT_URL=http://portal.192.168.0.28.nip.io
   - NEXT_PUBLIC_DEBUG=true
   - NEXT_PUBLIC_LOG_LEVEL=debug
 

@@ -9,5 +9,13 @@ resources:
 patches:
 - path: patch-deployment.yaml
 
+configMapGenerator:
+- name: portal-server-config
+  behavior: merge
+  literals:
+  - NODE_ENV=development
+  - CORS_ORIGINS=http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io
+  - LOG_LEVEL=debug
+
 commonLabels:
   environment: development

@@ -1,11 +1,45 @@
+# ========================================
+# 기존 코드 (Docker Desktop 전용, k3s Linux 미지원)
+# ========================================
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: krgeobuk-redis
+# spec:
+#   type: ExternalName
+#   externalName: host.docker.internal  # k3s Linux에는 이 DNS가 없음
+#   ports:
+#     - name: redis
+#       port: 6379
+#       targetPort: 6379
+
+# ========================================
+# 수정된 코드 (k3s Linux 환경용)
+# Service + Endpoints 방식으로 호스트 Docker Compose Redis 접근
+# ========================================
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: krgeobuk-redis
 spec:
-  type: ExternalName
-  externalName: host.docker.internal
+  type: ClusterIP
+  clusterIP: None  # Headless service
   ports:
-    - name: redis
-      port: 6379
-      targetPort: 6379
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-redis
+subsets:
+- addresses:
+  - ip: 192.168.0.28  # 미니PC 호스트 IP (변경 필요 시 여기만 수정)
+  ports:
+  - name: redis
+    port: 6379
+    protocol: TCP

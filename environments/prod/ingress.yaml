@@ -10,8 +10,7 @@ metadata:
   namespace: krgeobuk-prod
   annotations:
     # NGINX Ingress Controller 설정
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    # 서버가 서비스별 프리픽스를 사용하므로 rewrite 불필요
 
     # CORS 설정 (프로덕션 - 클라이언트 서브도메인 허용)
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -61,9 +60,9 @@ spec:
     http:
       paths:
       # auth-server: /auth/*
-      # 예: api.krgeobuk.com/auth/login
-      - path: /auth(/|$)(.*)
-        pathType: ImplementationSpecific
+      # 예: api.krgeobuk.com/auth/auth/login → auth-server:80/auth/auth/login
+      - path: /auth
+        pathType: Prefix
         backend:
           service:
             name: auth-server
@@ -71,34 +70,34 @@ spec:
               number: 80
 
       # authz-server: /authz/*
-      # 예: api.krgeobuk.com/authz/permissions
-      - path: /authz(/|$)(.*)
-        pathType: ImplementationSpecific
+      # 예: api.krgeobuk.com/authz/authz/permissions → authz-server:80/authz/authz/permissions
+      - path: /authz
+        pathType: Prefix
         backend:
           service:
             name: authz-server
             port:
-              number: 8100
+              number: 80
 
       # portal-server: /portal/*
-      # 예: api.krgeobuk.com/portal/users
-      - path: /portal(/|$)(.*)
-        pathType: ImplementationSpecific
+      # 예: api.krgeobuk.com/portal/portal/users → portal-server:80/portal/portal/users
+      - path: /portal
+        pathType: Prefix
         backend:
           service:
             name: portal-server
             port:
-              number: 8200
+              number: 80
 
       # my-pick-server: /mypick/*
-      # 예: api.krgeobuk.com/mypick/items
-      - path: /mypick(/|$)(.*)
-        pathType: ImplementationSpecific
+      # 예: api.krgeobuk.com/mypick/mypick/items → my-pick-server:80/mypick/mypick/items
+      - path: /mypick
+        pathType: Prefix
         backend:
           service:
             name: my-pick-server
             port:
-              number: 8300
+              number: 80
 
 ---
 # =============================================================================
@@ -136,13 +135,48 @@ spec:
           service:
             name: portal-client
             port:
-              number: 3200
+              number: 80
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: krgeobuk-admin-client-ingress
+  name: krgeobuk-auth-client-ingress
+  namespace: krgeobuk-prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/hsts: "true"
+    nginx.ingress.kubernetes.io/hsts-max-age: "31536000"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+spec:
+  ingressClassName: nginx
+
+  # TLS 설정
+  tls:
+  - hosts:
+    - auth.krgeobuk.com
+    secretName: auth-client-tls
+
+  rules:
+  - host: auth.krgeobuk.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-client
+            port:
+              number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: krgeobuk-portal-admin-client-ingress
   namespace: krgeobuk-prod
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
@@ -171,7 +205,7 @@ spec:
           service:
             name: portal-admin-client
             port:
-              number: 3210
+              number: 80
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -206,7 +240,7 @@ spec:
           service:
             name: my-pick-client
             port:
-              number: 3300
+              number: 80
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -241,7 +275,7 @@ spec:
           service:
             name: my-pick-admin-client
             port:
-              number: 3310
+              number: 80
 
 ---
 # =============================================================================

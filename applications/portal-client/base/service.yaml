@@ -16,7 +16,7 @@ spec:
   ports:
   # HTTP port for Next.js server
   - name: http
-    port: 3200
+    port: 80
     targetPort: 3200
     protocol: TCP
 

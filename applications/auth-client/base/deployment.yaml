@@ -21,7 +21,7 @@ spec:
         image: krgeobuk/auth-client:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 3000
           name: http
           protocol: TCP
 
@@ -31,8 +31,8 @@ spec:
 
         livenessProbe:
           httpGet:
-            path: /
-            port: 80
+            path: /api/health
+            port: 3000
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -40,8 +40,8 @@ spec:
 
         readinessProbe:
           httpGet:
-            path: /
-            port: 80
+            path: /api/health/ready
+            port: 3000
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3

@@ -16,7 +16,7 @@ spec:
   ports:
   # HTTP API port (REST API for clients)
   - name: http
-    port: 8300
+    port: 80
     targetPort: 8300
     protocol: TCP
 

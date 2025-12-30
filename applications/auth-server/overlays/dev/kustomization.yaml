@@ -15,6 +15,7 @@ configMapGenerator:
   literals:
   - NODE_ENV=development
   - MYSQL_DATABASE=auth_dev
+  - MYSQL_USER=dev_user
   - CORS_ORIGINS=http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io,http://mypick.192.168.0.28.nip.io,http://mypick-admin.192.168.0.28.nip.io
   - ALLOWED_REDIRECT_DOMAINS=192.168.0.28.nip.io,portal.192.168.0.28.nip.io,portal-admin.192.168.0.28.nip.io,mypick.192.168.0.28.nip.io,mypick-admin.192.168.0.28.nip.io
   - AUTH_CLIENT_URL=http://portal.192.168.0.28.nip.io

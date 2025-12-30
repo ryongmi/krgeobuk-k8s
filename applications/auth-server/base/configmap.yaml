@@ -37,7 +37,7 @@ data:
   # ========================================
   MYSQL_HOST: "krgeobuk-mysql"
   MYSQL_PORT: "3306"
-  MYSQL_USER: "krgeobuk"
+  MYSQL_USER: "geobuk"
   MYSQL_DATABASE: "auth"  # 환경별로 override (auth_dev, auth_prod)
 
   # ========================================

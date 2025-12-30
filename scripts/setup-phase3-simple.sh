@@ -33,13 +33,16 @@ K8S_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 INFRA_ROOT="$(cd "${K8S_ROOT}/../krgeobuk-infrastructure" && pwd)"
 
 # 더미 값 설정
-MYSQL_ROOT_PASSWORD="test1234"
 MYSQL_PASSWORD="test1234"
 REDIS_PASSWORD="test1234"
 GOOGLE_CLIENT_SECRET="dummy-google-secret-12345678"
 NAVER_CLIENT_SECRET="dummy-naver-secret-12345678"
 SMTP_USER="test@example.com"
 SMTP_PASS="dummy-smtp-password"
+YOUTUBE_API_KEY="dummy-youtube-api-key"
+TWITTER_API_KEY="dummy-twitter-api-key"
+TWITTER_API_KEY_SECRET="dummy-twitter-api-secret"
+TWITTER_BEARER_TOKEN="dummy-twitter-bearer-token"
 EXTERNAL_MYSQL_IP="127.0.0.1"
 EXTERNAL_REDIS_AUTH_IP="127.0.0.1"
 EXTERNAL_REDIS_AUTHZ_IP="127.0.0.1"
@@ -64,7 +67,6 @@ echo -e "${BLUE}1. krgeobuk-infrastructure/.env 생성 중...${NC}"
 
 cat > "${INFRA_ROOT}/.env" << EOF
 # MySQL 설정
-MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
 # Redis 설정
@@ -98,7 +100,6 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
   GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
   NAVER_CLIENT_SECRET: "${NAVER_CLIENT_SECRET}"
@@ -127,8 +128,6 @@ echo -e "${GREEN}  ✓ auth-server secret 생성 완료${NC}"
 
 # 2.2 authz-server secret
 echo -e "${YELLOW}  - authz-server secret 생성 중...${NC}"
-mkdir -p /tmp/jwt-keys-authz
-generate_test_jwt_keys /tmp/jwt-keys-authz
 
 cat > "${K8S_ROOT}/applications/authz-server/secret.yaml" << EOF
 apiVersion: v1
@@ -140,7 +139,6 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
 ---
 apiVersion: v1
@@ -151,14 +149,8 @@ metadata:
     app: authz-server
 type: Opaque
 stringData:
-  access-private.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/access-private.key)
   access-public.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/access-public.key)
-  refresh-private.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/refresh-private.key)
-  refresh-public.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/refresh-public.key)
+$(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
 echo -e "${GREEN}  ✓ authz-server secret 생성 완료${NC}"
@@ -176,8 +168,18 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: portal-server-jwt-keys
+  labels:
+    app: portal-server
+type: Opaque
+stringData:
+  access-public.key: |
+$(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
 echo -e "${GREEN}  ✓ portal-server secret 생성 완료${NC}"
@@ -195,14 +197,28 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
+  YOUTUBE_API_KEY: "${YOUTUBE_API_KEY}"
+  TWITTER_API_KEY: "${TWITTER_API_KEY}"
+  TWITTER_API_KEY_SECRET: "${TWITTER_API_KEY_SECRET}"
+  TWITTER_BEARER_TOKEN: "${TWITTER_BEARER_TOKEN}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-pick-server-jwt-keys
+  labels:
+    app: my-pick-server
+type: Opaque
+stringData:
+  access-public.key: |
+$(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
 echo -e "${GREEN}  ✓ my-pick-server secret 생성 완료${NC}"
 
 # JWT 키 임시 파일 정리
-rm -rf /tmp/jwt-keys-auth /tmp/jwt-keys-authz
+rm -rf /tmp/jwt-keys-auth
 
 echo ""
 

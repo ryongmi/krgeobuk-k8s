@@ -114,13 +114,6 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 while true; do
-    prompt_input "MySQL Root 비밀번호" "" MYSQL_ROOT_PASSWORD true
-    if validate_password "$MYSQL_ROOT_PASSWORD"; then
-        break
-    fi
-done
-
-while true; do
     prompt_input "MySQL 사용자 비밀번호" "" MYSQL_PASSWORD true
     if validate_password "$MYSQL_PASSWORD"; then
         break
@@ -188,11 +181,33 @@ prompt_input "SMTP 비밀번호" "dummy-smtp-password" SMTP_PASS true
 echo ""
 
 #####################################################################
-# 5. Jenkins 설정
+# 5. External API 설정 (my-pick-server)
 #####################################################################
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}5. Jenkins 설정${NC}"
+echo -e "${BLUE}5. External API 설정 (YouTube, Twitter)${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "${YELLOW}my-pick-server에서 사용할 외부 API 키를 입력하세요.${NC}"
+echo -e "${YELLOW}테스트용으로는 엔터를 눌러 더미 값을 사용할 수 있습니다.${NC}"
+echo ""
+
+prompt_input "YouTube API Key" "dummy-youtube-api-key" YOUTUBE_API_KEY false
+echo ""
+
+echo -e "${YELLOW}Twitter API 키 (OAuth 1.0a + OAuth 2.0)${NC}"
+prompt_input "Twitter API Key" "dummy-twitter-api-key" TWITTER_API_KEY false
+prompt_input "Twitter API Key Secret" "dummy-twitter-api-secret" TWITTER_API_KEY_SECRET true
+prompt_input "Twitter Bearer Token" "dummy-twitter-bearer-token" TWITTER_BEARER_TOKEN true
+
+echo ""
+
+#####################################################################
+# 6. Jenkins 설정
+#####################################################################
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}6. Jenkins 설정${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -206,11 +221,11 @@ done
 echo ""
 
 #####################################################################
-# 6. External Service IP 설정
+# 7. External Service IP 설정
 #####################################################################
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}6. External Service IP 설정${NC}"
+echo -e "${BLUE}7. External Service IP 설정${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "${YELLOW}Docker가 실행 중인 호스트 머신의 IP 주소를 입력하세요.${NC}"
@@ -225,20 +240,23 @@ prompt_input "Redis (authz) 서버 IP" "$EXTERNAL_MYSQL_IP" EXTERNAL_REDIS_AUTHZ
 echo ""
 
 #####################################################################
-# 7. 설정 확인
+# 8. 설정 확인
 #####################################################################
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}설정 확인${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "MySQL Root Password: ${YELLOW}[HIDDEN]${NC}"
 echo -e "MySQL Password: ${YELLOW}[HIDDEN]${NC}"
 echo -e "Redis Password: ${YELLOW}[HIDDEN]${NC}"
 echo -e "Google Client Secret: ${YELLOW}[HIDDEN]${NC}"
 echo -e "Naver Client Secret: ${YELLOW}[HIDDEN]${NC}"
 echo -e "SMTP User: ${YELLOW}${SMTP_USER}${NC}"
 echo -e "SMTP Password: ${YELLOW}[HIDDEN]${NC}"
+echo -e "YouTube API Key: ${YELLOW}${YOUTUBE_API_KEY}${NC}"
+echo -e "Twitter API Key: ${YELLOW}${TWITTER_API_KEY}${NC}"
+echo -e "Twitter API Secret: ${YELLOW}[HIDDEN]${NC}"
+echo -e "Twitter Bearer Token: ${YELLOW}[HIDDEN]${NC}"
 echo -e "Jenkins Admin Password: ${YELLOW}[HIDDEN]${NC}"
 echo -e "External MySQL IP: ${YELLOW}${EXTERNAL_MYSQL_IP}${NC}"
 echo -e "External Redis (auth) IP: ${YELLOW}${EXTERNAL_REDIS_AUTH_IP}${NC}"
@@ -267,7 +285,6 @@ echo -e "${YELLOW}1. krgeobuk-infrastructure/.env 생성 중...${NC}"
 
 cat > "${INFRA_ROOT}/.env" << EOF
 # MySQL 설정
-MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
 # Redis 설정
@@ -295,7 +312,6 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
   GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
   NAVER_CLIENT_SECRET: "${NAVER_CLIENT_SECRET}"
@@ -325,8 +341,6 @@ echo ""
 
 # 8.3 authz-server secret
 echo -e "${YELLOW}3. authz-server secret 생성 중...${NC}"
-mkdir -p /tmp/jwt-keys-authz
-generate_jwt_keys /tmp/jwt-keys-authz
 
 cat > "${K8S_ROOT}/applications/authz-server/secret.yaml" << EOF
 apiVersion: v1
@@ -338,7 +352,6 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
 ---
 apiVersion: v1
@@ -349,14 +362,8 @@ metadata:
     app: authz-server
 type: Opaque
 stringData:
-  access-private.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/access-private.key)
   access-public.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/access-public.key)
-  refresh-private.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/refresh-private.key)
-  refresh-public.key: |
-$(sed 's/^/    /' /tmp/jwt-keys-authz/refresh-public.key)
+$(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
 echo -e "${GREEN}✓ authz-server secret 생성 완료${NC}"
@@ -375,8 +382,18 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: portal-server-jwt-keys
+  labels:
+    app: portal-server
+type: Opaque
+stringData:
+  access-public.key: |
+$(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
 echo -e "${GREEN}✓ portal-server secret 생성 완료${NC}"
@@ -395,15 +412,29 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
+  YOUTUBE_API_KEY: "${YOUTUBE_API_KEY}"
+  TWITTER_API_KEY: "${TWITTER_API_KEY}"
+  TWITTER_API_KEY_SECRET: "${TWITTER_API_KEY_SECRET}"
+  TWITTER_BEARER_TOKEN: "${TWITTER_BEARER_TOKEN}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-pick-server-jwt-keys
+  labels:
+    app: my-pick-server
+type: Opaque
+stringData:
+  access-public.key: |
+$(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
 echo -e "${GREEN}✓ my-pick-server secret 생성 완료${NC}"
 echo ""
 
 # JWT 키 임시 파일 정리
-rm -rf /tmp/jwt-keys-auth /tmp/jwt-keys-authz
+rm -rf /tmp/jwt-keys-auth
 
 # 8.6 External Service IP 업데이트
 echo -e "${YELLOW}6. External Service IP 업데이트 중...${NC}"

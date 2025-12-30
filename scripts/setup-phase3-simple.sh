@@ -44,6 +44,7 @@ TWITTER_API_KEY="dummy-twitter-api-key"
 TWITTER_API_KEY_SECRET="dummy-twitter-api-secret"
 TWITTER_BEARER_TOKEN="dummy-twitter-bearer-token"
 EXTERNAL_MYSQL_IP="127.0.0.1"  # 호스트 IP (MySQL과 Redis 모두 동일 호스트 사용)
+EXTERNAL_REDIS_IP=${EXTERNAL_MYSQL_IP}
 
 # 간단한 테스트용 JWT 키 생성
 generate_test_jwt_keys() {
@@ -362,7 +363,7 @@ echo -e "${BLUE}========================================${NC}"
 echo -e "MySQL Password: ${YELLOW}${MYSQL_PASSWORD}${NC}"
 echo -e "Redis Password: ${YELLOW}${REDIS_PASSWORD}${NC}"
 echo -e "External MySQL IP: ${YELLOW}${EXTERNAL_MYSQL_IP}${NC}"
-echo -e "External Redis IP: ${YELLOW}${EXTERNAL_REDIS_AUTH_IP}, ${EXTERNAL_REDIS_AUTHZ_IP}${NC}"
+echo -e "External Redis IP: ${YELLOW}${EXTERNAL_REDIS_IP}${NC}"
 echo ""
 
 echo -e "${GREEN}========================================${NC}"

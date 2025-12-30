@@ -43,9 +43,7 @@ YOUTUBE_API_KEY="dummy-youtube-api-key"
 TWITTER_API_KEY="dummy-twitter-api-key"
 TWITTER_API_KEY_SECRET="dummy-twitter-api-secret"
 TWITTER_BEARER_TOKEN="dummy-twitter-bearer-token"
-EXTERNAL_MYSQL_IP="127.0.0.1"
-EXTERNAL_REDIS_AUTH_IP="127.0.0.1"
-EXTERNAL_REDIS_AUTHZ_IP="127.0.0.1"
+EXTERNAL_MYSQL_IP="127.0.0.1"  # 호스트 IP (MySQL과 Redis 모두 동일 호스트 사용)
 
 # 간단한 테스트용 JWT 키 생성
 generate_test_jwt_keys() {
@@ -232,26 +230,53 @@ echo -e "${BLUE}3. External Service IP 업데이트 중...${NC}"
 echo -e "${YELLOW}  - external-mysql.yaml 업데이트 중...${NC}"
 
 cat > "${K8S_ROOT}/base/external-mysql.yaml" << EOF
+# ========================================
+# 기존 코드 (Docker Desktop 전용, k3s Linux 미지원)
+# ========================================
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: krgeobuk-mysql
+# spec:
+#   type: ExternalName
+#   externalName: host.docker.internal  # k3s Linux에는 이 DNS가 없음
+#   ports:
+#     - name: mysql
+#       port: 3306
+#       targetPort: 3306
+
+# ========================================
+# 수정된 코드 (k3s Linux 환경용)
+# Service + Endpoints 방식으로 호스트 Docker Compose DB 접근
+# ========================================
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: krgeobuk-mysql
+  namespace: krgeobuk-dev
 spec:
-  type: ExternalName
-  externalName: ${EXTERNAL_MYSQL_IP}
+  type: ClusterIP
+  clusterIP: None  # Headless service
   ports:
-    - name: mysql-auth
-      port: 3307
-      targetPort: 3307
-    - name: mysql-authz
-      port: 3308
-      targetPort: 3308
-    - name: mysql-portal
-      port: 3309
-      targetPort: 3309
-    - name: mysql-mypick
-      port: 3310
-      targetPort: 3310
+  - name: mysql
+    port: 3306
+    targetPort: 3306
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-mysql
+  namespace: krgeobuk-dev
+subsets:
+- addresses:
+  - ip: ${EXTERNAL_MYSQL_IP}  # 미니PC 호스트 IP (변경 필요 시 여기만 수정)
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
 EOF
 
 echo -e "${GREEN}  ✓ external-mysql.yaml 업데이트 완료${NC}"
@@ -260,29 +285,53 @@ echo -e "${GREEN}  ✓ external-mysql.yaml 업데이트 완료${NC}"
 echo -e "${YELLOW}  - external-redis.yaml 업데이트 중...${NC}"
 
 cat > "${K8S_ROOT}/base/external-redis.yaml" << EOF
-apiVersion: v1
-kind: Service
-metadata:
-  name: krgeobuk-redis-auth
-spec:
-  type: ExternalName
-  externalName: ${EXTERNAL_REDIS_AUTH_IP}
-  ports:
-    - name: redis
-      port: 6380
-      targetPort: 6380
+# ========================================
+# 기존 코드 (Docker Desktop 전용, k3s Linux 미지원)
+# ========================================
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: krgeobuk-redis
+# spec:
+#   type: ExternalName
+#   externalName: host.docker.internal  # k3s Linux에는 이 DNS가 없음
+#   ports:
+#     - name: redis
+#       port: 6379
+#       targetPort: 6379
+
+# ========================================
+# 수정된 코드 (k3s Linux 환경용)
+# Service + Endpoints 방식으로 호스트 Docker Compose Redis 접근
+# ========================================
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: krgeobuk-redis-authz
+  name: krgeobuk-redis
+  namespace: krgeobuk-dev
 spec:
-  type: ExternalName
-  externalName: ${EXTERNAL_REDIS_AUTHZ_IP}
+  type: ClusterIP
+  clusterIP: None  # Headless service
   ports:
-    - name: redis
-      port: 6381
-      targetPort: 6381
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: krgeobuk-redis
+  namespace: krgeobuk-dev
+subsets:
+- addresses:
+  - ip: ${EXTERNAL_MYSQL_IP}  # 미니PC 호스트 IP (MySQL과 동일 호스트)
+  ports:
+  - name: redis
+    port: 6379
+    protocol: TCP
 EOF
 
 echo -e "${GREEN}  ✓ external-redis.yaml 업데이트 완료${NC}"
@@ -310,7 +359,6 @@ echo ""
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}생성된 더미 값 정보${NC}"
 echo -e "${BLUE}========================================${NC}"
-echo -e "MySQL Root Password: ${YELLOW}${MYSQL_ROOT_PASSWORD}${NC}"
 echo -e "MySQL Password: ${YELLOW}${MYSQL_PASSWORD}${NC}"
 echo -e "Redis Password: ${YELLOW}${REDIS_PASSWORD}${NC}"
 echo -e "External MySQL IP: ${YELLOW}${EXTERNAL_MYSQL_IP}${NC}"

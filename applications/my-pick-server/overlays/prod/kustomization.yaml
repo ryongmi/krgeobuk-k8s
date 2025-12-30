@@ -9,5 +9,14 @@ resources:
 patches:
 - path: patch-deployment.yaml
 
+configMapGenerator:
+- name: my-pick-server-config
+  behavior: merge
+  literals:
+  - NODE_ENV=production
+  - MYSQL_DATABASE=mypick_prod
+  - CORS_ORIGINS=https://mypick.krgeobuk.com,https://mypick-admin.krgeobuk.com
+  - LOG_LEVEL=info
+
 commonLabels:
   environment: production

@@ -12,6 +12,7 @@ data:
   PORT: "8000"
   TCP_PORT: "8010"
   APP_NAME: "auth-server"
+  AUTH_SERVER_URL: "http://dev.krgeobuk.com/auth"
 
   # CORS 설정 (환경별로 override 필요)
   CORS_ORIGINS: "http://localhost:3000,http://localhost:3200,http://localhost:3210"
@@ -38,7 +39,7 @@ data:
   MYSQL_HOST: "krgeobuk-mysql"
   MYSQL_PORT: "3306"
   MYSQL_USER: "geobuk"
-  MYSQL_DATABASE: "auth"  # 환경별로 override (auth_dev, auth_prod)
+  MYSQL_DATABASE: "auth" # 환경별로 override (auth_dev, auth_prod)
 
   # ========================================
   # Redis 설정
@@ -82,8 +83,8 @@ data:
 
   # JWT 쿠키 설정
   JWT_SESSION_COOKIE_PATH: "/"
-  JWT_REFRESH_MAX_AGE: "604800000"  # 7일 (밀리초)
-  JWT_COOKIE_DOMAIN: ".localhost"   # 환경별로 override (.yourdomain.com)
+  JWT_REFRESH_MAX_AGE: "604800000" # 7일 (밀리초)
+  JWT_COOKIE_DOMAIN: ".localhost" # 환경별로 override (.yourdomain.com)
 
   # Redis 저장소 키 접두사
   JWT_REFRESH_STORE_NAME: "refreshToken"
@@ -101,4 +102,4 @@ data:
 
   # 이메일 인증 설정
   EMAIL_VERIFICATION_EXPIRES: "86400"
-  EMAIL_VERIFICATION_BASE_URL: "http://localhost:3000"  # 환경별로 override
+  EMAIL_VERIFICATION_BASE_URL: "http://localhost:3000" # 환경별로 override

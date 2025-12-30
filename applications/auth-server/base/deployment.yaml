@@ -6,7 +6,7 @@ metadata:
     app: auth-server
     tier: backend
 spec:
-  replicas: 1  # base 기본값 (최소)
+  replicas: 1 # base 기본값 (최소)
   selector:
     matchLabels:
       app: auth-server
@@ -17,82 +17,83 @@ spec:
         tier: backend
     spec:
       initContainers:
-      - name: wait-for-database
-        image: busybox:1.36
-        command:
-        - sh
-        - -c
-        - |
-          echo "Waiting for database connections..."
-          until nc -z krgeobuk-mysql 3306 && nc -z krgeobuk-redis 6379; do
-            echo "Database not ready, waiting..."
-            sleep 2
-          done
-          echo "Database connections successful!"
+        - name: wait-for-database
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for database connections..."
+              until nc -z krgeobuk-mysql 3306 && nc -z krgeobuk-redis 6379; do
+                echo "Database not ready, waiting..."
+                sleep 2
+              done
+              echo "Database connections successful!"
 
       containers:
-      - name: auth-server
-        image: krgeobuk/auth-server:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8000
-          name: http
-          protocol: TCP
-        - containerPort: 8010
-          name: tcp
-          protocol: TCP
+        - name: auth-server
+          image: krgeobuk/auth-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+              protocol: TCP
+            - containerPort: 8010
+              name: tcp
+              protocol: TCP
 
-        envFrom:
-        - configMapRef:
-            name: auth-server-config
-        - secretRef:
-            name: auth-server-secrets
+          envFrom:
+            - configMapRef:
+                name: auth-server-config
+            - secretRef:
+                name: auth-server-secrets
 
-        env:
-        - name: PORT
-          value: "8000"
-        - name: TCP_PORT
-          value: "8010"
+          env:
+            - name: PORT
+              value: "8000"
+            - name: TCP_PORT
+              value: "8010"
 
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
 
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
 
-        resources:
-          requests:
-            cpu: 100m  # base 기본값 (최소)
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
+          resources:
+            requests:
+              cpu: 100m # base 기본값 (최소)
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 
-        volumeMounts:
-        - name: logs
-          mountPath: /app/logs
-        - name: jwt-keys
-          mountPath: /etc/jwt-keys
-          readOnly: true
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
+            - name: jwt-keys
+              mountPath: /etc/jwt-keys
+              readOnly: true
 
       volumes:
-      - name: logs
-        emptyDir: {}
-      - name: jwt-keys
-        secret:
-          secretName: auth-server-jwt-keys
-          defaultMode: 0400  # 읽기 전용
+        - name: logs
+          emptyDir: {}
+        - name: jwt-keys
+          secret:
+            secretName: auth-server-jwt-keys
+            # defaultMode: 0400  # 읽기 전용 - 소유자만 일기
+            defaultMode: 0444 # 읽기 전용 - 모두 읽기 가능
 
       restartPolicy: Always

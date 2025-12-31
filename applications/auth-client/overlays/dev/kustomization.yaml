@@ -4,22 +4,22 @@ kind: Kustomization
 namespace: krgeobuk-dev
 
 resources:
-- ../../base
+  - ../../base
 
 patches:
-- path: patch-deployment.yaml
+  - path: patch-deployment.yaml
 
 configMapGenerator:
-- name: auth-client-config
-  behavior: merge
-  literals:
-  - NODE_ENV=development
-  - NEXT_PUBLIC_ENVIRONMENT=development
-  - NEXT_PUBLIC_AUTH_SERVER_URL=http://api.192.168.0.28.nip.io/auth
-  - NEXT_PUBLIC_DOMAIN=192.168.0.28.nip.io
-  - NEXT_PUBLIC_APP_URL=http://portal.192.168.0.28.nip.io
-  - NEXT_PUBLIC_PORTAL_CLIENT_URL=http://portal.192.168.0.28.nip.io
-  - NEXT_PUBLIC_PORTAL_ADMIN_URL=http://portal-admin.192.168.0.28.nip.io
+  - name: auth-client-config
+    behavior: merge
+    literals:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_ENVIRONMENT=development
+      - NEXT_PUBLIC_AUTH_SERVER_URL=http://api.192.168.0.28.nip.io/auth
+      - NEXT_PUBLIC_DOMAIN=192.168.0.28.nip.io
+      - NEXT_PUBLIC_APP_URL=http://auth.192.168.0.28.nip.io
+      - NEXT_PUBLIC_PORTAL_CLIENT_URL=http://portal.192.168.0.28.nip.io
+      - NEXT_PUBLIC_PORTAL_ADMIN_URL=http://portal-admin.192.168.0.28.nip.io
 
 commonLabels:
   environment: development

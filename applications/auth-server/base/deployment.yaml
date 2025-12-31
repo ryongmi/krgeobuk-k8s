@@ -5,6 +5,7 @@ metadata:
   labels:
     app: auth-server
     tier: backend
+    component: authentication
 spec:
   replicas: 1 # base 기본값 (최소)
   selector:
@@ -15,6 +16,7 @@ spec:
       labels:
         app: auth-server
         tier: backend
+        component: authentication
     spec:
       initContainers:
         - name: wait-for-database

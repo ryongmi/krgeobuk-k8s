@@ -4,22 +4,22 @@ kind: Kustomization
 namespace: krgeobuk-prod
 
 resources:
-- ../../base
+  - ../../base
 
 patches:
-- path: patch-deployment.yaml
+  - path: patch-deployment.yaml
 
 configMapGenerator:
-- name: auth-client-config
-  behavior: merge
-  literals:
-  - NODE_ENV=production
-  - NEXT_PUBLIC_ENVIRONMENT=production
-  - NEXT_PUBLIC_AUTH_SERVER_URL=http://auth-server/api
-  - NEXT_PUBLIC_DOMAIN=krgeobuk.com
-  - NEXT_PUBLIC_APP_URL=https://auth.krgeobuk.com
-  - NEXT_PUBLIC_PORTAL_CLIENT_URL=https://portal.krgeobuk.com
-  - NEXT_PUBLIC_PORTAL_ADMIN_URL=https://admin.krgeobuk.com
+  - name: auth-client-config
+    behavior: merge
+    literals:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_ENVIRONMENT=production
+      - NEXT_PUBLIC_AUTH_SERVER_URL=https://api.krgeobuk.com/auth
+      - NEXT_PUBLIC_DOMAIN=krgeobuk.com
+      - NEXT_PUBLIC_APP_URL=https://auth.krgeobuk.com
+      - NEXT_PUBLIC_PORTAL_CLIENT_URL=https://portal.krgeobuk.com
+      - NEXT_PUBLIC_PORTAL_ADMIN_URL=https://portal-admin.krgeobuk.com
 
 commonLabels:
   environment: production

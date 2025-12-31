@@ -14,7 +14,7 @@ data:
   PORT: "8000"
   TCP_PORT: "8010"
   APP_NAME: "auth-server"
-  AUTH_SERVER_URL: "http://dev.krgeobuk.com/auth"
+  AUTH_SERVER_URL: "http://api.krgeobuk.com/auth"
 
   # CORS 설정 (환경별로 override 필요)
   CORS_ORIGINS: "http://localhost:3000,http://localhost:3200,http://localhost:3210"

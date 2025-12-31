@@ -5,13 +5,14 @@ metadata:
   labels:
     app: auth-client
     tier: frontend
+    component: authentication
 data:
   # ========================================
   # 서버 URL 설정
   # ========================================
   # 인증 서버 URL - Kubernetes Service 이름 사용
   # 환경별로 override 필요 (dev: http://auth-server, prod: https://auth-server.krgeobuk.com)
-  NEXT_PUBLIC_AUTH_SERVER_URL: "http://auth-server/api"
+  NEXT_PUBLIC_AUTH_SERVER_URL: "http://dev.krgeobuk.com/auth"
 
   # ========================================
   # SSO 통합 설정

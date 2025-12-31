@@ -5,6 +5,7 @@ metadata:
   labels:
     app: auth-server
     tier: backend
+    component: authentication
 data:
   # ========================================
   # 서버 설정

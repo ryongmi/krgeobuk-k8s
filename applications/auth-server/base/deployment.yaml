@@ -48,12 +48,6 @@ spec:
             - secretRef:
                 name: auth-server-secrets
 
-          env:
-            - name: PORT
-              value: "8000"
-            - name: TCP_PORT
-              value: "8010"
-
           livenessProbe:
             httpGet:
               path: /health

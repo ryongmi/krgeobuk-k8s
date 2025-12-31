@@ -4,6 +4,7 @@ metadata:
   name: auth-client-config
   labels:
     app: auth-client
+    tier: frontend
 data:
   # ========================================
   # 서버 URL 설정

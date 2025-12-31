@@ -4,6 +4,7 @@ metadata:
   name: auth-server-config
   labels:
     app: auth-server
+    tier: backend
 data:
   # ========================================
   # 서버 설정

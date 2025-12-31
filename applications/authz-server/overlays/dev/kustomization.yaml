@@ -4,21 +4,21 @@ kind: Kustomization
 namespace: krgeobuk-dev
 
 resources:
-- ../../base
+  - ../../base
 
 patches:
-- path: patch-deployment.yaml
+  - path: patch-deployment.yaml
 
 configMapGenerator:
-- name: authz-server-config
-  behavior: merge
-  literals:
-  - NODE_ENV=development
-  - MYSQL_DATABASE=authz_dev
-  - MYSQL_USER=dev_user
-  - CORS_ORIGINS=http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io,http://mypick.192.168.0.28.nip.io,http://mypick-admin.192.168.0.28.nip.io
-  - LOG_LEVEL=debug
-  - PERMISSION_CACHE_TTL=300
+  - name: authz-server-config
+    behavior: merge
+    literals:
+      - NODE_ENV=development
+      - MYSQL_DATABASE=authz_dev
+      - MYSQL_USER=dev_user
+      - CORS_ORIGINS=http://auth.192.168.0.28.nip.io,http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io,http://mypick.192.168.0.28.nip.io,http://mypick-admin.192.168.0.28.nip.io
+      - LOG_LEVEL=debug
+      - PERMISSION_CACHE_TTL=300
 
 commonLabels:
   environment: development

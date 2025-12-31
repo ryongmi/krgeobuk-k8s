@@ -16,6 +16,9 @@ data:
   APP_NAME: "auth-server"
   AUTH_SERVER_URL: "http://api.krgeobuk.com/auth"
 
+  # Log level (error, warn, info, debug)
+  LOG_LEVEL: "info"
+
   # CORS 설정 (환경별로 override 필요)
   CORS_ORIGINS: "http://localhost:3000,http://localhost:3200,http://localhost:3210"
   ALLOWED_REDIRECT_DOMAINS: "localhost,localhost:3000,localhost:3200,localhost:3210"

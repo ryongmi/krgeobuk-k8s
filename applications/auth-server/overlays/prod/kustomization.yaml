@@ -25,6 +25,7 @@ configMapGenerator:
       - JWT_COOKIE_DOMAIN=.krgeobuk.com
       - EMAIL_VERIFICATION_BASE_URL=https://auth.krgeobuk.com
       - AUTH_SERVER_URL=http://api.krgeobuk.com/auth
+      - LOG_LEVEL=info
 
 commonLabels:
   environment: production

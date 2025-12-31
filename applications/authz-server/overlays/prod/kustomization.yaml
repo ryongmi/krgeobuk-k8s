@@ -4,20 +4,20 @@ kind: Kustomization
 namespace: krgeobuk-prod
 
 resources:
-- ../../base
+  - ../../base
 
 patches:
-- path: patch-deployment.yaml
+  - path: patch-deployment.yaml
 
 configMapGenerator:
-- name: authz-server-config
-  behavior: merge
-  literals:
-  - NODE_ENV=production
-  - MYSQL_DATABASE=authz_prod
-  - CORS_ORIGINS=https://auth.krgeobuk.com,https://portal.krgeobuk.com,https://admin.krgeobuk.com
-  - LOG_LEVEL=info
-  - PERMISSION_CACHE_TTL=600
+  - name: authz-server-config
+    behavior: merge
+    literals:
+      - NODE_ENV=production
+      - MYSQL_DATABASE=authz_prod
+      - CORS_ORIGINS=https://auth.krgeobuk.com,https://portal.krgeobuk.com,https://portal-admin.krgeobuk.com,https://mypick.krgeobuk.com,https://mypick-admin.krgeobuk.com
+      - LOG_LEVEL=info
+      - PERMISSION_CACHE_TTL=600
 
 commonLabels:
   environment: production

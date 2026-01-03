@@ -10,11 +10,11 @@ spec:
       - name: portal-admin-client
         resources:
           requests:
-            cpu: 200m  # prod는 더 많은 리소스
-            memory: 256Mi
+            cpu: 100m  # 프론트엔드는 더 적은 리소스
+            memory: 128Mi
           limits:
-            cpu: 400m
-            memory: 512Mi
+            cpu: 300m
+            memory: 384Mi
 
       # Pod Anti-Affinity (다른 노드에 분산 배치)
       affinity:

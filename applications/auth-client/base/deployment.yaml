@@ -58,3 +58,9 @@ spec:
             memory: 256Mi
 
       restartPolicy: Always
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

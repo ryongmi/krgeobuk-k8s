@@ -89,7 +89,12 @@ spec:
         - name: jwt-keys
           secret:
             secretName: auth-server-jwt-keys
-            # defaultMode: 0400  # 읽기 전용 - 소유자만 일기
-            defaultMode: 0444 # 읽기 전용 - 모두 읽기 가능
+            defaultMode: 0400  # 읽기 전용 - 소유자만 읽기
 
       restartPolicy: Always
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: my-pick-client
-        image: your-registry/my-pick-client:latest
+        image: krgeobuk/my-pick-client:latest
         imagePullPolicy: Always
         ports:
         # Next.js HTTP port
@@ -36,42 +36,19 @@ spec:
         - configMapRef:
             name: my-pick-client-config
 
-        # Sensitive environment variables from Secrets
-        env:
-        - name: NEXT_PUBLIC_YOUTUBE_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-client-secrets
-              key: NEXT_PUBLIC_YOUTUBE_API_KEY
-        - name: NEXT_PUBLIC_TWITTER_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-client-secrets
-              key: NEXT_PUBLIC_TWITTER_API_KEY
-        - name: NEXT_PUBLIC_TWITTER_API_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-client-secrets
-              key: NEXT_PUBLIC_TWITTER_API_SECRET
-        - name: NEXT_PUBLIC_TWITTER_BEARER_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-client-secrets
-              key: NEXT_PUBLIC_TWITTER_BEARER_TOKEN
-
         # Resource limits and requests
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "100m"
+            cpu: 50m  # 프론트엔드는 더 적은 리소스
+            memory: 64Mi
           limits:
-            memory: "512Mi"
-            cpu: "200m"
+            cpu: 200m
+            memory: 256Mi
 
         # Liveness probe (checks if container is alive)
         livenessProbe:
           httpGet:
-            path: /
+            path: /api/health
             port: 3300
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -81,7 +58,7 @@ spec:
         # Readiness probe (checks if container is ready to serve traffic)
         readinessProbe:
           httpGet:
-            path: /
+            path: /api/health/ready
             port: 3300
           initialDelaySeconds: 10
           periodSeconds: 5

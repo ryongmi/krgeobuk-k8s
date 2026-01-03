@@ -13,7 +13,7 @@ spec:
         resources:
           requests:
             cpu: 50m  # dev는 최소 리소스
-            memory: 128Mi
+            memory: 64Mi
           limits:
             cpu: 150m
-            memory: 256Mi
+            memory: 192Mi

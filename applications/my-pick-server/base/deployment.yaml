@@ -21,9 +21,23 @@ spec:
         tier: backend
         component: mypick
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for database connections..."
+              until nc -z krgeobuk-mysql 3306 && nc -z krgeobuk-redis 6379; do
+                echo "Database not ready, waiting..."
+                sleep 2
+              done
+              echo "Database connections successful!"
+
       containers:
       - name: my-pick-server
-        image: your-registry/my-pick-server:latest
+        image: krgeobuk/my-pick-server:latest
         imagePullPolicy: Always
         ports:
         # HTTP API port (REST API for clients)
@@ -35,33 +49,12 @@ spec:
           containerPort: 8310
           protocol: TCP
 
-        # Environment variables from ConfigMap
+        # Environment variables from ConfigMap and Secrets
         envFrom:
         - configMapRef:
             name: my-pick-server-config
-
-        # Sensitive environment variables from Secrets
-        env:
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-server-secrets
-              key: MYSQL_PASSWORD
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-server-secrets
-              key: REDIS_PASSWORD
-        - name: YOUTUBE_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-server-secrets
-              key: YOUTUBE_API_KEY
-        - name: TWITTER_BEARER_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: my-pick-server-secrets
-              key: TWITTER_BEARER_TOKEN
+        - secretRef:
+            name: my-pick-server-secrets
 
         # Volume mounts
         volumeMounts:
@@ -83,7 +76,7 @@ spec:
         # Liveness probe (checks if container is alive)
         livenessProbe:
           httpGet:
-            path: /api/health
+            path: /health
             port: 8300
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -93,7 +86,7 @@ spec:
         # Readiness probe (checks if container is ready to serve traffic)
         readinessProbe:
           httpGet:
-            path: /api/health
+            path: /health/ready
             port: 8300
           initialDelaySeconds: 10
           periodSeconds: 5

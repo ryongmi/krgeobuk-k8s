@@ -24,8 +24,10 @@ configMapGenerator:
       - NAVER_REDIRECT_URL=https://auth.krgeobuk.com/api/oauth/login-naver/callback
       - JWT_COOKIE_DOMAIN=.krgeobuk.com
       - EMAIL_VERIFICATION_BASE_URL=https://auth.krgeobuk.com
+      - EMAIL_PASSWORD_RESET_BASE_URL=https://auth.krgeobuk.com
       - AUTH_SERVER_URL=http://api.krgeobuk.com/auth
       - LOG_LEVEL=info
+      - REDIS_KEY_PREFIX=prod
 
 commonLabels:
   environment: production

@@ -17,6 +17,7 @@ configMapGenerator:
   - MYSQL_DATABASE=portal_prod
   - CORS_ORIGINS=https://portal.krgeobuk.com,https://admin.krgeobuk.com
   - LOG_LEVEL=info
+  - REDIS_KEY_PREFIX=prod
 
 commonLabels:
   environment: production

@@ -73,6 +73,9 @@ data:
   # Redis internal port (container communication)
   REDIS_PORT: "6379"
 
+  # Redis key prefix for environment separation
+  REDIS_KEY_PREFIX: ""
+
   # ========================================
   # JWT Token Validation Settings
   # ========================================
@@ -88,9 +91,3 @@ data:
   # Log level (error, warn, info, debug)
   LOG_LEVEL: "info"
 
-  # ========================================
-  # Health Check Settings
-  # ========================================
-
-  # Health check endpoint
-  HEALTH_CHECK_ENDPOINT: "/api/health"

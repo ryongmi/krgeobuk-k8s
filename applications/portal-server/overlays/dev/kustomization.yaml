@@ -18,6 +18,7 @@ configMapGenerator:
   - MYSQL_USER=dev_user
   - CORS_ORIGINS=http://portal.192.168.0.28.nip.io,http://portal-admin.192.168.0.28.nip.io
   - LOG_LEVEL=debug
+  - REDIS_KEY_PREFIX=dev
 
 commonLabels:
   environment: development

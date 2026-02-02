@@ -37,6 +37,8 @@ data:
   AUTHZ_SERVICE_PORT: "8110"
   PORTAL_SERVICE_HOST: "portal-server"
   PORTAL_SERVICE_PORT: "8210"
+  MYPICK_SERVICE_HOST: "my-pick-server"
+  MYPICK_SERVICE_PORT: "8310"
 
   # ========================================
   # MySQL 설정
@@ -51,6 +53,8 @@ data:
   # ========================================
   REDIS_HOST: "krgeobuk-redis"
   REDIS_PORT: "6379"
+  # Redis 키 환경별 분리를 위한 prefix (환경별로 override)
+  REDIS_KEY_PREFIX: ""
 
   # ========================================
   # Google OAuth 설정
@@ -67,11 +71,6 @@ data:
   NAVER_REDIRECT_URL: "http://localhost:8000/api/oauth/login-naver/callback"
   NAVER_TOKEN_URL: "https://nid.naver.com/oauth2.0/token"
   NAVER_USERINFO_URL: "https://openapi.naver.com/v1/nid/me"
-
-  # ========================================
-  # OAuth 리다이렉트 세션 설정
-  # ========================================
-  OAUTH_REDIRECT_SESSION_STORE_NAME: "redirectSession:"
 
   # ========================================
   # JWT 설정
@@ -91,12 +90,6 @@ data:
   JWT_REFRESH_MAX_AGE: "604800000" # 7일 (밀리초)
   JWT_COOKIE_DOMAIN: ".localhost" # 환경별로 override (.yourdomain.com)
 
-  # Redis 저장소 키 접두사
-  JWT_REFRESH_STORE_NAME: "refreshToken"
-  JWT_BLACKLIST_STORE_NAME: "blacklist:"
-  JWT_NAVER_STATE_STORE_NAME: "naverState:"
-  JWT_GOOGLE_STATE_STORE_NAME: "googleState:"
-
   # ========================================
   # Email 설정
   # ========================================
@@ -106,5 +99,9 @@ data:
   SMTP_FROM: "krgeobuk <noreply@krgeobuk.com>"
 
   # 이메일 인증 설정
-  EMAIL_VERIFICATION_EXPIRES: "86400"
+  EMAIL_VERIFICATION_EXPIRES: "86400" # 24시간 (초)
   EMAIL_VERIFICATION_BASE_URL: "http://localhost:3000" # 환경별로 override
+
+  # 비밀번호 재설정 설정
+  EMAIL_PASSWORD_RESET_EXPIRES: "3600" # 1시간 (초)
+  EMAIL_PASSWORD_RESET_BASE_URL: "http://localhost:3000" # 환경별로 override

@@ -24,8 +24,10 @@ configMapGenerator:
       - NAVER_REDIRECT_URL=http://api.192.168.0.28.nip.io/auth/auth/oauth/login-naver/callback
       - JWT_COOKIE_DOMAIN=.192.168.0.28.nip.io
       - EMAIL_VERIFICATION_BASE_URL=http://auth.192.168.0.28.nip.io
+      - EMAIL_PASSWORD_RESET_BASE_URL=http://auth.192.168.0.28.nip.io
       - AUTH_SERVER_URL=http://api.192.168.0.28.nip.io/auth
       - LOG_LEVEL=debug
+      - REDIS_KEY_PREFIX=dev
 
 commonLabels:
   environment: development

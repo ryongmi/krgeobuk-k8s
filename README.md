@@ -218,6 +218,77 @@ kubectl apply -k applications/auth-server/overlays/dev/
 
 ---
 
+## Dev 환경 이미지 관리
+
+dev 환경은 `imagePullPolicy: Never`로 설정되어 있어 Docker Registry를 사용하지 않습니다.
+k3s는 containerd를 이미지 스토어로 사용하며 Docker 데몬과 분리되어 있기 때문에,
+`docker build`로 만든 이미지를 별도로 k3s containerd에 적재해야 합니다.
+
+### 방식 1: 파이프로 직접 import (Jenkins 파이프라인 방식)
+
+```bash
+# 빌드 후 바로 k3s containerd에 적재 (파일 저장 없음)
+docker build -t auth-server:latest .
+docker save auth-server:latest | k3s ctr images import --namespace k8s.io -
+```
+
+### 방식 2: tar.gz로 압축 후 import (수동 방식)
+
+이미지를 파일로 보관하거나 다른 서버로 전송할 때 사용합니다.
+
+```bash
+# 1. 이미지 빌드
+docker build -t auth-server:latest .
+
+# 2. tar.gz로 압축 저장
+docker save auth-server:latest | gzip > auth-server.tar.gz
+
+# 3. k3s containerd에 import
+k3s ctr images import --namespace k8s.io auth-server.tar.gz
+
+# 4. 압축 파일 정리 (선택)
+rm auth-server.tar.gz
+```
+
+### 전체 서비스 일괄 처리
+
+```bash
+SERVICES=(
+  auth-server
+  auth-client
+  authz-server
+  portal-client
+  portal-server
+  my-pick-server
+  my-pick-client
+  portal-admin-client
+  my-pick-admin-client
+)
+
+for svc in "${SERVICES[@]}"; do
+  echo ">>> $svc"
+  docker save ${svc}:latest | k3s ctr images import --namespace k8s.io -
+done
+```
+
+### 이미지 확인 및 정리
+
+```bash
+# k3s containerd에 적재된 이미지 목록 확인
+k3s ctr images list --namespace k8s.io
+
+# 특정 서비스 이미지 확인
+k3s ctr images list --namespace k8s.io | grep auth-server
+
+# 불필요한 이미지 삭제
+k3s ctr images rm --namespace k8s.io docker.io/library/auth-server:latest
+```
+
+> **참고**: `k3s ctr` 명령은 미니PC 호스트 또는 Jenkins Pod(k3s 바이너리/소켓 마운트 필요)에서 실행 가능합니다.
+> Jenkins Pod 설정: `krgeobuk-deployment/jenkins/k8s/deployment.yaml`
+
+---
+
 ## 클러스터 애드온
 
 ### cert-manager (TLS 인증서 자동 발급)

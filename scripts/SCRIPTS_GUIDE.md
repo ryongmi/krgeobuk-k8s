@@ -67,10 +67,10 @@ Kubernetes 배포, 롤백, 모니터링을 위한 자동화 스크립트 모음�
 - `authz-server` - 권한 서버
 - `portal-server` - 포털 서버
 - `portal-client` - 포털 클라이언트
-- `my-pick-server` - MyPick 서버
-- `my-pick-client` - MyPick 클라이언트
+- `mypick-server` - MyPick 서버
+- `mypick-client` - MyPick 클라이언트
 - `portal-admin-client` - 포털 관리자 클라이언트
-- `my-pick-admin-client` - MyPick 관리자 클라이언트
+- `mypick-admin-client` - MyPick 관리자 클라이언트
 
 #### 예시
 
@@ -464,18 +464,18 @@ sleep 30  # 인프라 안정화 대기
 ./scripts/deploy.sh dev auth-server
 ./scripts/deploy.sh dev authz-server
 ./scripts/deploy.sh dev portal-server
-./scripts/deploy.sh dev my-pick-server
+./scripts/deploy.sh dev mypick-server
 
 # 3. 프론트엔드 배포
-./scripts/deploy.sh dev my-pick-client
+./scripts/deploy.sh dev mypick-client
 ./scripts/deploy.sh dev portal-admin-client
-./scripts/deploy.sh dev my-pick-admin-client
+./scripts/deploy.sh dev mypick-admin-client
 
 # 4. 전체 헬스 체크
 ./scripts/health-check.sh dev
 
 # 5. 각 서비스 로그 확인
-for service in auth-server authz-server portal-server my-pick-server; do
+for service in auth-server authz-server portal-server mypick-server; do
     echo "=== $service logs ==="
     ./scripts/logs.sh dev $service --tail 50
 done

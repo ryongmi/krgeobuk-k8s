@@ -89,13 +89,13 @@ spec:
             port:
               number: 80
 
-      # my-pick-server: /mypick/*
-      # 예: api.krgeobuk.com/mypick/mypick/items → my-pick-server:80/mypick/mypick/items
+      # mypick-server: /mypick/*
+      # 예: api.krgeobuk.com/mypick/mypick/items → mypick-server:80/mypick/mypick/items
       - path: /mypick
         pathType: Prefix
         backend:
           service:
-            name: my-pick-server
+            name: mypick-server
             port:
               number: 80
 
@@ -238,7 +238,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: my-pick-client
+            name: mypick-client
             port:
               number: 80
 
@@ -273,7 +273,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: my-pick-admin-client
+            name: mypick-admin-client
             port:
               number: 80
 
@@ -289,14 +289,14 @@ spec:
 # 클라이언트 (서브도메인):
 #   - portal.krgeobuk.com       → portal-client (Next.js)
 #   - portal-admin.krgeobuk.com → portal-admin-client (Next.js)
-#   - mypick.krgeobuk.com       → my-pick-client (Next.js)
-#   - mypick-admin.krgeobuk.com → my-pick-admin-client (Next.js)
+#   - mypick.krgeobuk.com       → mypick-client (Next.js)
+#   - mypick-admin.krgeobuk.com → mypick-admin-client (Next.js)
 #
 # API (api 서브도메인 + 경로):
 #   - api.krgeobuk.com/auth/*   → auth-server (NestJS)
 #   - api.krgeobuk.com/authz/*  → authz-server (NestJS)
 #   - api.krgeobuk.com/portal/* → portal-server (NestJS)
-#   - api.krgeobuk.com/mypick/* → my-pick-server (NestJS)
+#   - api.krgeobuk.com/mypick/* → mypick-server (NestJS)
 #
 # 📝 API 호출 예시:
 # -----------------

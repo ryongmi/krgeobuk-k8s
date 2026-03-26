@@ -13,8 +13,8 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 
 | 구분 | Phase 1 | Phase 2 | 합계 |
 |------|---------|---------|------|
-| **백엔드 서비스** | 2개 (auth, authz) | 2개 (portal, my-pick) | 4개 |
-| **프론트엔드** | 2개 (auth-client, portal-client) | 3개 (my-pick-client, 2개 admin) | 5개 |
+| **백엔드 서비스** | 2개 (auth, authz) | 2개 (portal, mypick) | 4개 |
+| **프론트엔드** | 2개 (auth-client, portal-client) | 3개 (mypick-client, 2개 admin) | 5개 |
 | **생성된 파일** | ~30개 | 37개 | ~67개 |
 | **코드 라인** | ~1000줄 | 1500+줄 | ~2500줄 |
 
@@ -66,7 +66,7 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 
 ---
 
-### 2. my-pick-server (포트 8300/8310)
+### 2. mypick-server (포트 8300/8310)
 
 **역할**: MyPick 플랫폼 백엔드 서비스
 
@@ -113,17 +113,17 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 ```
 
 **배포 파일**:
-- `applications/my-pick-server/configmap.yaml`
-- `applications/my-pick-server/deployment.yaml`
-- `applications/my-pick-server/service.yaml`
-- `applications/my-pick-server/secret.yaml.template` (YouTube/Twitter API 키 포함)
-- `applications/my-pick-server/kustomization.yaml`
-- `environments/dev/patches/my-pick-server-dev.yaml`
-- `environments/prod/patches/my-pick-server-prod.yaml`
+- `applications/mypick-server/configmap.yaml`
+- `applications/mypick-server/deployment.yaml`
+- `applications/mypick-server/service.yaml`
+- `applications/mypick-server/secret.yaml.template` (YouTube/Twitter API 키 포함)
+- `applications/mypick-server/kustomization.yaml`
+- `environments/dev/patches/mypick-server-dev.yaml`
+- `environments/prod/patches/mypick-server-prod.yaml`
 
 ---
 
-### 3. my-pick-client (포트 3300)
+### 3. mypick-client (포트 3300)
 
 **역할**: MyPick 사용자 프론트엔드
 
@@ -153,10 +153,10 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 - ClusterIP + Session Affinity (3시간)
 
 # 환경 변수
-- NEXT_PUBLIC_API_URL: http://my-pick-server:8300
+- NEXT_PUBLIC_API_URL: http://mypick-server:8300
 - NEXT_PUBLIC_AUTH_SERVER_URL: http://auth-server:8000
 - NEXT_PUBLIC_AUTHZ_API_URL: http://authz-server:8100
-- NEXT_PUBLIC_MYPICK_API_URL: http://my-pick-server:8300
+- NEXT_PUBLIC_MYPICK_API_URL: http://mypick-server:8300
 
 # Secret (클라이언트 사이드 API 키)
 - NEXT_PUBLIC_YOUTUBE_API_KEY
@@ -170,13 +170,13 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 ```
 
 **배포 파일**:
-- `applications/my-pick-client/configmap.yaml`
-- `applications/my-pick-client/deployment.yaml`
-- `applications/my-pick-client/service.yaml`
-- `applications/my-pick-client/secret.yaml.template`
-- `applications/my-pick-client/kustomization.yaml`
-- `environments/dev/patches/my-pick-client-dev.yaml`
-- `environments/prod/patches/my-pick-client-prod.yaml`
+- `applications/mypick-client/configmap.yaml`
+- `applications/mypick-client/deployment.yaml`
+- `applications/mypick-client/service.yaml`
+- `applications/mypick-client/secret.yaml.template`
+- `applications/mypick-client/kustomization.yaml`
+- `environments/dev/patches/mypick-client-dev.yaml`
+- `environments/prod/patches/mypick-client-prod.yaml`
 
 ---
 
@@ -234,7 +234,7 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 
 ---
 
-### 5. my-pick-admin-client (포트 3310)
+### 5. mypick-admin-client (포트 3310)
 
 **역할**: MyPick 관리자 인터페이스
 
@@ -264,8 +264,8 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 
 # 환경 변수
 - NEXT_PUBLIC_AUTH_SERVER_URL: http://auth-server:8000
-- NEXT_PUBLIC_PICK_SERVER_URL: http://my-pick-server:8300
-- NEXT_PUBLIC_ADMIN_CLIENT_URL: http://my-pick-admin-client:3310
+- NEXT_PUBLIC_PICK_SERVER_URL: http://mypick-server:8300
+- NEXT_PUBLIC_ADMIN_CLIENT_URL: http://mypick-admin-client:3310
 - NEXT_PUBLIC_PORTAL_CLIENT_URL: http://portal-client:3200
 
 # 개발 도구
@@ -274,13 +274,13 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 ```
 
 **배포 파일**:
-- `applications/my-pick-admin-client/configmap.yaml`
-- `applications/my-pick-admin-client/deployment.yaml`
-- `applications/my-pick-admin-client/service.yaml`
-- `applications/my-pick-admin-client/secret.yaml.template` (현재 사용 안 함, 확장용)
-- `applications/my-pick-admin-client/kustomization.yaml`
-- `environments/dev/patches/my-pick-admin-client-dev.yaml`
-- `environments/prod/patches/my-pick-admin-client-prod.yaml`
+- `applications/mypick-admin-client/configmap.yaml`
+- `applications/mypick-admin-client/deployment.yaml`
+- `applications/mypick-admin-client/service.yaml`
+- `applications/mypick-admin-client/secret.yaml.template` (현재 사용 안 함, 확장용)
+- `applications/mypick-admin-client/kustomization.yaml`
+- `environments/dev/patches/mypick-admin-client-dev.yaml`
+- `environments/prod/patches/mypick-admin-client-prod.yaml`
 
 ---
 
@@ -293,14 +293,14 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 │                                                   │
 │  auth-client:3000      portal-client:3200        │
 │  portal-admin-client:3210                        │
-│  my-pick-client:3300   my-pick-admin-client:3310 │
+│  mypick-client:3300   mypick-admin-client:3310 │
 │                                                   │
 └───────────────────┬───────────────────────────────┘
                     │ HTTP API
 ┌───────────────────┴───────────────────────────────┐
 │                                                   │
 │  auth-server:8000/8010     authz-server:8100/8110│
-│  portal-server:8200/8210   my-pick-server:8300/8310
+│  portal-server:8200/8210   mypick-server:8300/8310
 │                                                   │
 └───────────────────┬───────────────────────────────┘
                     │
@@ -325,9 +325,9 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 | portal-client | 3200 | - | 포털 사용자 UI |
 | portal-admin-client | 3210 | - | 포털 관리자 UI |
 | **MyPick** | | | |
-| my-pick-server | 8300 | 8310 | MyPick API |
-| my-pick-client | 3300 | - | MyPick 사용자 UI |
-| my-pick-admin-client | 3310 | - | MyPick 관리자 UI |
+| mypick-server | 8300 | 8310 | MyPick API |
+| mypick-client | 3300 | - | MyPick 사용자 UI |
+| mypick-admin-client | 3310 | - | MyPick 관리자 UI |
 | **인증 클라이언트** | | | |
 | auth-client | 3000 | - | 인증 전용 UI |
 
@@ -339,29 +339,29 @@ Phase 2에서는 krgeobuk 생태계의 나머지 5개 서비스를 Kubernetes �
 krgeobuk-k8s/
 ├── applications/
 │   ├── portal-server/           # ✨ Phase 2
-│   ├── my-pick-server/          # ✨ Phase 2
-│   ├── my-pick-client/          # ✨ Phase 2
+│   ├── mypick-server/          # ✨ Phase 2
+│   ├── mypick-client/          # ✨ Phase 2
 │   ├── portal-admin-client/     # ✨ Phase 2
-│   └── my-pick-admin-client/    # ✨ Phase 2
+│   └── mypick-admin-client/    # ✨ Phase 2
 │
 ├── environments/
 │   ├── dev/
 │   │   ├── kustomization.yaml   # ✅ Phase 2 서비스 추가
 │   │   └── patches/
 │   │       ├── portal-server-dev.yaml           # ✨ Phase 2
-│   │       ├── my-pick-server-dev.yaml          # ✨ Phase 2
-│   │       ├── my-pick-client-dev.yaml          # ✨ Phase 2
+│   │       ├── mypick-server-dev.yaml          # ✨ Phase 2
+│   │       ├── mypick-client-dev.yaml          # ✨ Phase 2
 │   │       ├── portal-admin-client-dev.yaml     # ✨ Phase 2
-│   │       └── my-pick-admin-client-dev.yaml    # ✨ Phase 2
+│   │       └── mypick-admin-client-dev.yaml    # ✨ Phase 2
 │   │
 │   └── prod/
 │       ├── kustomization.yaml   # ✅ Phase 2 서비스 추가
 │       └── patches/
 │           ├── portal-server-prod.yaml          # ✨ Phase 2
-│           ├── my-pick-server-prod.yaml         # ✨ Phase 2
-│           ├── my-pick-client-prod.yaml         # ✨ Phase 2
+│           ├── mypick-server-prod.yaml         # ✨ Phase 2
+│           ├── mypick-client-prod.yaml         # ✨ Phase 2
 │           ├── portal-admin-client-prod.yaml    # ✨ Phase 2
-│           └── my-pick-admin-client-prod.yaml   # ✨ Phase 2
+│           └── mypick-admin-client-prod.yaml   # ✨ Phase 2
 │
 └── base/  # Phase 1에서 완료
 ```
@@ -434,7 +434,7 @@ env:
 - Redis 비밀번호
 - JWT Private/Public Keys (RSA)
 
-**my-pick-server 특별 추가**:
+**mypick-server 특별 추가**:
 - YouTube Data API v3 Key
 - Twitter Bearer Token
 
@@ -549,24 +549,24 @@ Phase 2 배포 후 확인 사항:
 ### 네트워크 통신
 - [ ] portal-server ↔ auth-server TCP 통신
 - [ ] portal-server ↔ authz-server TCP 통신
-- [ ] my-pick-server ↔ auth-server TCP 통신
-- [ ] my-pick-server ↔ authz-server TCP 통신
+- [ ] mypick-server ↔ auth-server TCP 통신
+- [ ] mypick-server ↔ authz-server TCP 통신
 
 ### 데이터베이스 연결
 - [ ] portal-server → MySQL (portal DB)
-- [ ] my-pick-server → MySQL (mypick DB)
+- [ ] mypick-server → MySQL (mypick DB)
 - [ ] Redis 연결 (모든 백엔드 서비스)
 
 ### 외부 API 연동
-- [ ] my-pick-server → YouTube Data API v3
-- [ ] my-pick-server → Twitter API v2
-- [ ] my-pick-client → my-pick-server API (서버 사이드 연동)
+- [ ] mypick-server → YouTube Data API v3
+- [ ] mypick-server → Twitter API v2
+- [ ] mypick-client → mypick-server API (서버 사이드 연동)
 
 ### 프론트엔드
 - [ ] portal-client 로딩
 - [ ] portal-admin-client 로딩 및 관리자 권한 검증
-- [ ] my-pick-client 로딩
-- [ ] my-pick-admin-client 로딩 및 관리자 권한 검증
+- [ ] mypick-client 로딩
+- [ ] mypick-admin-client 로딩 및 관리자 권한 검증
 
 ### 헬스 체크
 - [ ] /health 엔드포인트 응답 (백엔드)
@@ -645,10 +645,10 @@ Phase 2 완료: 5개 추가 서비스 Kubernetes 배포 구성
 
 ## 추가된 서비스 (Phase 2)
 - portal-server (8200/8210): 포털 백엔드 서비스
-- my-pick-server (8300/8310): MyPick 백엔드 서비스
-- my-pick-client (3300): MyPick 프론트엔드
+- mypick-server (8300/8310): MyPick 백엔드 서비스
+- mypick-client (3300): MyPick 프론트엔드
 - portal-admin-client (3210): 포털 관리자 인터페이스
-- my-pick-admin-client (3310): MyPick 관리자 인터페이스
+- mypick-admin-client (3310): MyPick 관리자 인터페이스
 
 🤖 Generated with Claude Code
 ```

@@ -1,0 +1,75 @@
+# mypick-client Deployment
+# MyPick Client deployment configuration for Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mypick-client
+  labels:
+    app: mypick-client
+    tier: frontend
+    component: mypick
+spec:
+  replicas: 2  # High availability with 2 replicas
+  selector:
+    matchLabels:
+      app: mypick-client
+  template:
+    metadata:
+      labels:
+        app: mypick-client
+        tier: frontend
+        component: mypick
+    spec:
+      containers:
+      - name: mypick-client
+        image: krgeobuk/mypick-client:latest
+        imagePullPolicy: Always
+        ports:
+        # Next.js HTTP port
+        - name: http
+          containerPort: 3300
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: mypick-client-config
+
+        # Resource limits and requests
+        resources:
+          requests:
+            cpu: 50m  # 프론트엔드는 더 적은 리소스
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+        # Liveness probe (checks if container is alive)
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3300
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Readiness probe (checks if container is ready to serve traffic)
+        readinessProbe:
+          httpGet:
+            path: /api/health/ready
+            port: 3300
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Restart policy
+      restartPolicy: Always
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

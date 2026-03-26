@@ -76,11 +76,11 @@ ls -la jwt-keys/
 # portal-server Secret 생성
 ./scripts/create-secrets.sh portal-server .env
 
-# my-pick-server Secret 생성
-./scripts/create-secrets.sh my-pick-server .env
+# mypick-server Secret 생성
+./scripts/create-secrets.sh mypick-server .env
 
-# my-pick-client는 Secret이 필요하지 않음 (레거시 제거됨)
-# ./scripts/create-secrets.sh my-pick-client .env
+# mypick-client는 Secret이 필요하지 않음 (레거시 제거됨)
+# ./scripts/create-secrets.sh mypick-client .env
 ```
 
 ### 5단계: Secret 적용
@@ -90,8 +90,8 @@ ls -la jwt-keys/
 kubectl apply -f applications/auth-server/secret.yaml -n krgeobuk-dev
 kubectl apply -f applications/authz-server/secret.yaml -n krgeobuk-dev
 kubectl apply -f applications/portal-server/secret.yaml -n krgeobuk-dev
-kubectl apply -f applications/my-pick-server/secret.yaml -n krgeobuk-dev
-# my-pick-client는 Secret이 필요하지 않음
+kubectl apply -f applications/mypick-server/secret.yaml -n krgeobuk-dev
+# mypick-client는 Secret이 필요하지 않음
 
 # 적용 확인
 kubectl get secrets -n krgeobuk-dev
@@ -147,8 +147,8 @@ JWT 인증에 사용할 RSA 키 쌍을 생성합니다.
 - `auth-server` - 인증 서버
 - `authz-server` - 권한 서버
 - `portal-server` - 포털 백엔드
-- `my-pick-server` - MyPick 백엔드
-- `my-pick-client` - MyPick 클라이언트 (현재 Secret 불필요)
+- `mypick-server` - MyPick 백엔드
+- `mypick-client` - MyPick 클라이언트 (현재 Secret 불필요)
 
 **기능**:
 - 환경 변수 Base64 인코딩
@@ -211,13 +211,13 @@ nano .env
 ./scripts/validate-secrets.sh .env
 
 # 4. Secret 생성 (모든 서비스)
-for service in auth-server authz-server portal-server my-pick-server; do
+for service in auth-server authz-server portal-server mypick-server; do
     ./scripts/create-secrets.sh $service .env
 done
-# my-pick-client는 Secret이 필요하지 않음
+# mypick-client는 Secret이 필요하지 않음
 
 # 5. Secret 적용 (Dev)
-for service in auth-server authz-server portal-server my-pick-server; do
+for service in auth-server authz-server portal-server mypick-server; do
     kubectl apply -f applications/$service/secret.yaml -n krgeobuk-dev
 done
 
@@ -358,11 +358,11 @@ kubectl apply -f applications/auth-server/secret.yaml -n krgeobuk-prod
 cat > deploy-secrets.sh << 'EOF'
 #!/bin/bash
 NAMESPACE=${1:-krgeobuk-dev}
-for service in auth-server authz-server portal-server my-pick-server; do
+for service in auth-server authz-server portal-server mypick-server; do
     echo "Applying $service secret to $NAMESPACE..."
     kubectl apply -f applications/$service/secret.yaml -n $NAMESPACE
 done
-# my-pick-client는 Secret이 필요하지 않음
+# mypick-client는 Secret이 필요하지 않음
 EOF
 
 chmod +x deploy-secrets.sh

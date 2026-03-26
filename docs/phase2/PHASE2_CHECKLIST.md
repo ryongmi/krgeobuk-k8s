@@ -55,10 +55,10 @@ kubectl apply -f secret.yaml -n krgeobuk-dev
 kubectl apply -f secret.yaml -n krgeobuk-prod
 ```
 
-### 1.2 my-pick-server Secret
+### 1.2 mypick-server Secret
 
 ```bash
-cd applications/my-pick-server
+cd applications/mypick-server
 cp secret.yaml.template secret.yaml
 ```
 
@@ -77,9 +77,9 @@ kubectl apply -f secret.yaml -n krgeobuk-dev
 kubectl apply -f secret.yaml -n krgeobuk-prod
 ```
 
-### 1.3 my-pick-client Secret
+### 1.3 mypick-client Secret
 
-**⚠️ 현재 my-pick-client는 별도의 Secret이 필요하지 않습니다.**
+**⚠️ 현재 mypick-client는 별도의 Secret이 필요하지 않습니다.**
 - YouTube, Twitter API 관련 환경 변수는 레거시로 제거되었습니다.
 - Secret 생성 및 적용을 건너뛰어도 됩니다.
 
@@ -88,7 +88,7 @@ kubectl apply -f secret.yaml -n krgeobuk-prod
 - [ ] 현재 Secret 불필요 (내부 서비스만 사용)
 - [ ] 미래 확장을 위해 템플릿만 제공됨
 
-### 1.5 my-pick-admin-client Secret
+### 1.5 mypick-admin-client Secret
 
 - [ ] 현재 Secret 불필요 (내부 서비스만 사용)
 - [ ] 미래 확장을 위해 템플릿만 제공됨
@@ -117,18 +117,18 @@ kubectl get pods -n krgeobuk-dev
 # auth-server-xxx                         1/1     Running   0
 # authz-server-xxx                        1/1     Running   0
 # portal-server-xxx                       1/1     Running   0
-# my-pick-server-xxx                      1/1     Running   0
-# my-pick-client-xxx                      1/1     Running   0
+# mypick-server-xxx                      1/1     Running   0
+# mypick-client-xxx                      1/1     Running   0
 # portal-admin-client-xxx                 1/1     Running   0
-# my-pick-admin-client-xxx                1/1     Running   0
+# mypick-admin-client-xxx                1/1     Running   0
 ```
 
 **체크리스트**:
 - [ ] `portal-server` Pod가 Running 상태
-- [ ] `my-pick-server` Pod가 Running 상태
-- [ ] `my-pick-client` Pod가 Running 상태
+- [ ] `mypick-server` Pod가 Running 상태
+- [ ] `mypick-client` Pod가 Running 상태
 - [ ] `portal-admin-client` Pod가 Running 상태
-- [ ] `my-pick-admin-client` Pod가 Running 상태
+- [ ] `mypick-admin-client` Pod가 Running 상태
 
 ### 2.2 Prod 환경 배포
 
@@ -183,10 +183,10 @@ kubectl get endpoints -n krgeobuk-dev
 
 **확인 사항**:
 - [ ] `portal-server` Service 존재 (8200, 8210 포트)
-- [ ] `my-pick-server` Service 존재 (8300, 8310 포트)
-- [ ] `my-pick-client` Service 존재 (3300 포트)
+- [ ] `mypick-server` Service 존재 (8300, 8310 포트)
+- [ ] `mypick-client` Service 존재 (3300 포트)
 - [ ] `portal-admin-client` Service 존재 (3210 포트)
-- [ ] `my-pick-admin-client` Service 존재 (3310 포트)
+- [ ] `mypick-admin-client` Service 존재 (3310 포트)
 - [ ] Endpoints에 Pod IP가 정상적으로 등록됨
 
 ### 3.3 로그 확인
@@ -194,10 +194,10 @@ kubectl get endpoints -n krgeobuk-dev
 ```bash
 # 각 서비스 로그 확인
 kubectl logs -f portal-server-xxx -n krgeobuk-dev
-kubectl logs -f my-pick-server-xxx -n krgeobuk-dev
-kubectl logs -f my-pick-client-xxx -n krgeobuk-dev
+kubectl logs -f mypick-server-xxx -n krgeobuk-dev
+kubectl logs -f mypick-client-xxx -n krgeobuk-dev
 kubectl logs -f portal-admin-client-xxx -n krgeobuk-dev
-kubectl logs -f my-pick-admin-client-xxx -n krgeobuk-dev
+kubectl logs -f mypick-admin-client-xxx -n krgeobuk-dev
 ```
 
 **확인 사항**:
@@ -225,10 +225,10 @@ curl http://localhost:8200/health
 
 **체크리스트**:
 - [ ] portal-server `/health` 응답 정상
-- [ ] my-pick-server `/health` 응답 정상
-- [ ] my-pick-client `/` 응답 정상 (Next.js 페이지)
+- [ ] mypick-server `/health` 응답 정상
+- [ ] mypick-client `/` 응답 정상 (Next.js 페이지)
 - [ ] portal-admin-client `/` 응답 정상
-- [ ] my-pick-admin-client `/` 응답 정상
+- [ ] mypick-admin-client `/` 응답 정상
 
 ### 4.2 데이터베이스 연결
 
@@ -236,13 +236,13 @@ curl http://localhost:8200/health
 # portal-server 로그에서 MySQL 연결 확인
 kubectl logs portal-server-xxx -n krgeobuk-dev | grep -i mysql
 
-# my-pick-server 로그에서 MySQL 연결 확인
-kubectl logs my-pick-server-xxx -n krgeobuk-dev | grep -i mysql
+# mypick-server 로그에서 MySQL 연결 확인
+kubectl logs mypick-server-xxx -n krgeobuk-dev | grep -i mysql
 ```
 
 **확인 사항**:
 - [ ] portal-server → MySQL `portal` DB 연결 성공
-- [ ] my-pick-server → MySQL `mypick` DB 연결 성공
+- [ ] mypick-server → MySQL `mypick` DB 연결 성공
 - [ ] Redis 연결 성공
 
 ### 4.3 서비스 간 통신
@@ -252,25 +252,25 @@ kubectl logs my-pick-server-xxx -n krgeobuk-dev | grep -i mysql
 kubectl exec -it portal-server-xxx -n krgeobuk-dev -- sh
 nc -zv auth-server 8010  # TCP 통신 확인
 
-# my-pick-server가 authz-server와 통신하는지 확인
-kubectl exec -it my-pick-server-xxx -n krgeobuk-dev -- sh
+# mypick-server가 authz-server와 통신하는지 확인
+kubectl exec -it mypick-server-xxx -n krgeobuk-dev -- sh
 nc -zv authz-server 8110  # TCP 통신 확인
 ```
 
 **체크리스트**:
 - [ ] portal-server → auth-server:8010 연결 가능
 - [ ] portal-server → authz-server:8110 연결 가능
-- [ ] my-pick-server → auth-server:8010 연결 가능
-- [ ] my-pick-server → authz-server:8110 연결 가능
+- [ ] mypick-server → auth-server:8010 연결 가능
+- [ ] mypick-server → authz-server:8110 연결 가능
 
-### 4.4 외부 API 연동 (my-pick-server)
+### 4.4 외부 API 연동 (mypick-server)
 
 ```bash
-# my-pick-server 로그에서 YouTube API 호출 확인
-kubectl logs my-pick-server-xxx -n krgeobuk-dev | grep -i youtube
+# mypick-server 로그에서 YouTube API 호출 확인
+kubectl logs mypick-server-xxx -n krgeobuk-dev | grep -i youtube
 
 # Twitter API 호출 확인
-kubectl logs my-pick-server-xxx -n krgeobuk-dev | grep -i twitter
+kubectl logs mypick-server-xxx -n krgeobuk-dev | grep -i twitter
 ```
 
 **확인 사항**:
@@ -301,14 +301,14 @@ cat /etc/jwt-keys/access-public.key
 
 ```bash
 # Port Forward로 프론트엔드 접근
-kubectl port-forward svc/my-pick-client 3300:3300 -n krgeobuk-dev
+kubectl port-forward svc/mypick-client 3300:3300 -n krgeobuk-dev
 
 # 브라우저에서 http://localhost:3300 접속
 # 개발자 도구(F12) → Network 탭에서 API 호출 확인
 ```
 
 **확인 사항**:
-- [ ] my-pick-client → my-pick-server API 호출 성공
+- [ ] mypick-client → mypick-server API 호출 성공
 - [ ] portal-admin-client → portal-server API 호출 성공
 - [ ] JWT 토큰 인증 정상 작동
 
@@ -367,7 +367,7 @@ kubectl describe configmap portal-server-config -n krgeobuk-dev
 kubectl get secrets -n krgeobuk-dev
 
 # Secret이 Pod에 제대로 마운트되었는지 확인
-kubectl exec -it my-pick-server-xxx -n krgeobuk-dev -- sh
+kubectl exec -it mypick-server-xxx -n krgeobuk-dev -- sh
 env | grep YOUTUBE
 env | grep TWITTER
 ```
@@ -417,11 +417,11 @@ kubectl get pods -n krgeobuk-dev
 ```bash
 kubectl get pods -n krgeobuk-dev
 # NAME                    READY   STATUS             RESTARTS
-# my-pick-server-xxx      0/1     CrashLoopBackOff   5
+# mypick-server-xxx      0/1     CrashLoopBackOff   5
 ```
 
 **원인 및 해결**:
-- [ ] 로그 확인: `kubectl logs my-pick-server-xxx -n krgeobuk-dev`
+- [ ] 로그 확인: `kubectl logs mypick-server-xxx -n krgeobuk-dev`
 - [ ] Secret 누락: Secret이 제대로 생성되었는지 확인
 - [ ] 데이터베이스 연결 실패: MySQL/Redis 상태 확인
 - [ ] 환경 변수 오류: ConfigMap 확인
@@ -450,7 +450,7 @@ kubectl get endpoints portal-server -n krgeobuk-dev
 - [ ] 쿼터 초과: YouTube/Twitter 개발자 콘솔에서 쿼터 확인
 - [ ] 네트워크 문제: Pod에서 외부 인터넷 접근 가능한지 확인
   ```bash
-  kubectl exec -it my-pick-server-xxx -n krgeobuk-dev -- sh
+  kubectl exec -it mypick-server-xxx -n krgeobuk-dev -- sh
   curl https://www.googleapis.com/youtube/v3/search
   ```
 

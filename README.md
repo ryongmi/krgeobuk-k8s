@@ -35,10 +35,10 @@ MySQL, Redis에 연결                            클론하여 kubectl apply -k 
 | authz-server | 8100 | 8110 | 권한 관리 서버 (RBAC) |
 | portal-client | 3200 | - | 통합 포털 UI |
 | portal-server | 8200 | 8210 | 포털 백엔드 API |
-| my-pick-server | 8300 | 8310 | MyPick 백엔드 API |
-| my-pick-client | 3300 | - | MyPick 사용자 UI |
+| mypick-server | 8300 | 8310 | MyPick 백엔드 API |
+| mypick-client | 3300 | - | MyPick 사용자 UI |
 | portal-admin-client | 3210 | - | 포털 관리자 UI |
-| my-pick-admin-client | 3310 | - | MyPick 관리자 UI |
+| mypick-admin-client | 3310 | - | MyPick 관리자 UI |
 
 ---
 
@@ -259,10 +259,10 @@ SERVICES=(
   authz-server
   portal-client
   portal-server
-  my-pick-server
-  my-pick-client
+  mypick-server
+  mypick-client
   portal-admin-client
-  my-pick-admin-client
+  mypick-admin-client
 )
 
 for svc in "${SERVICES[@]}"; do

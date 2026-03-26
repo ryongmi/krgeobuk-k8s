@@ -116,8 +116,8 @@ auth-server와 auth-client를 검토/수정 완료했다면, 동일한 패턴으
 - authz-server (포트 8100, 8110, Redis DB 2/3)
 - portal-client (포트 3000)
 - portal-admin-client (포트 3001)
-- my-pick-server (포트 8200, 8210)
-- my-pick-client (포트 3002)
+- mypick-server (포트 8200, 8210)
+- mypick-client (포트 3002)
 
 **요청 예시**:
 > "auth-server 패턴 그대로 authz-server 만들어줘. 포트는 8100, 8110이고 Redis DB는 dev는 2, prod는 3 사용해"

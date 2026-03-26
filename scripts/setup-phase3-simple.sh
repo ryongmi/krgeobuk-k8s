@@ -183,16 +183,16 @@ EOF
 
 echo -e "${GREEN}  ✓ portal-server secret 생성 완료${NC}"
 
-# 2.4 my-pick-server secret
-echo -e "${YELLOW}  - my-pick-server secret 생성 중...${NC}"
+# 2.4 mypick-server secret
+echo -e "${YELLOW}  - mypick-server secret 생성 중...${NC}"
 
-cat > "${K8S_ROOT}/applications/my-pick-server/secret.yaml" << EOF
+cat > "${K8S_ROOT}/applications/mypick-server/secret.yaml" << EOF
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-pick-server-secrets
+  name: mypick-server-secrets
   labels:
-    app: my-pick-server
+    app: mypick-server
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
@@ -205,16 +205,16 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-pick-server-jwt-keys
+  name: mypick-server-jwt-keys
   labels:
-    app: my-pick-server
+    app: mypick-server
 type: Opaque
 stringData:
   access-public.key: |
 $(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
-echo -e "${GREEN}  ✓ my-pick-server secret 생성 완료${NC}"
+echo -e "${GREEN}  ✓ mypick-server secret 생성 완료${NC}"
 
 # JWT 키 임시 파일 정리
 rm -rf /tmp/jwt-keys-auth
@@ -352,7 +352,7 @@ echo -e "${GREEN}✓ krgeobuk-infrastructure/.env${NC}"
 echo -e "${GREEN}✓ applications/auth-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/authz-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/portal-server/secret.yaml${NC}"
-echo -e "${GREEN}✓ applications/my-pick-server/secret.yaml${NC}"
+echo -e "${GREEN}✓ applications/mypick-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ base/external-mysql.yaml${NC}"
 echo -e "${GREEN}✓ base/external-redis.yaml${NC}"
 

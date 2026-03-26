@@ -219,8 +219,8 @@ cd ~/krgeobuk-infra/krgeobuk-k8s/applications/portal-server
 cp secret.yaml.template secret.yaml
 nano secret.yaml
 
-# my-pick-server
-cd ~/krgeobuk-infra/krgeobuk-k8s/applications/my-pick-server
+# mypick-server
+cd ~/krgeobuk-infra/krgeobuk-k8s/applications/mypick-server
 cp secret.yaml.template secret.yaml
 nano secret.yaml
 
@@ -244,7 +244,7 @@ kubectl apply -f applications/authz-server/secret.yaml
 
 # 기타 서비스 secret 적용
 kubectl apply -f applications/portal-server/secret.yaml
-kubectl apply -f applications/my-pick-server/secret.yaml
+kubectl apply -f applications/mypick-server/secret.yaml
 
 # Secret 확인
 kubectl get secrets -n krgeobuk-dev

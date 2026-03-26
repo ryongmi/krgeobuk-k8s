@@ -34,10 +34,10 @@ usage() {
     echo "  authz-server           - 권한 서버"
     echo "  portal-server          - 포털 서버"
     echo "  portal-client          - 포털 클라이언트"
-    echo "  my-pick-server         - MyPick 서버"
-    echo "  my-pick-client         - MyPick 클라이언트"
+    echo "  mypick-server         - MyPick 서버"
+    echo "  mypick-client         - MyPick 클라이언트"
     echo "  portal-admin-client    - 포털 관리자 클라이언트"
-    echo "  my-pick-admin-client   - MyPick 관리자 클라이언트"
+    echo "  mypick-admin-client   - MyPick 관리자 클라이언트"
     echo "  infrastructure         - 인프라 (MySQL, Redis, Verdaccio)"
     echo ""
     echo "예시:"
@@ -219,10 +219,10 @@ if [ "$SERVICE" == "all" ]; then
         "authz-server"
         "portal-server"
         "portal-client"
-        "my-pick-server"
-        "my-pick-client"
+        "mypick-server"
+        "mypick-client"
         "portal-admin-client"
-        "my-pick-admin-client"
+        "mypick-admin-client"
     )
 else
     SERVICES=("$SERVICE")

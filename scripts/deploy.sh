@@ -34,10 +34,10 @@ usage() {
     echo "  authz-server           - 권한 서버"
     echo "  portal-server          - 포털 서버"
     echo "  portal-client          - 포털 클라이언트"
-    echo "  my-pick-server         - MyPick 서버"
-    echo "  my-pick-client         - MyPick 클라이언트"
+    echo "  mypick-server         - MyPick 서버"
+    echo "  mypick-client         - MyPick 클라이언트"
     echo "  portal-admin-client    - 포털 관리자 클라이언트"
-    echo "  my-pick-admin-client   - MyPick 관리자 클라이언트"
+    echo "  mypick-admin-client   - MyPick 관리자 클라이언트"
     echo ""
     echo "참고:"
     echo "  - 개별 서비스 배포 시에도 환경별 패치가 자동 적용됩니다"
@@ -118,7 +118,7 @@ case $SERVICE in
         # 전체 환경 배포 (environments/$ENV)
         SERVICES=("all")
         ;;
-    infrastructure|auth-server|auth-client|authz-server|portal-server|portal-client|my-pick-server|my-pick-client|portal-admin-client|my-pick-admin-client)
+    infrastructure|auth-server|auth-client|authz-server|portal-server|portal-client|mypick-server|mypick-client|portal-admin-client|mypick-admin-client)
         SERVICES=("$SERVICE")
         ;;
     *)

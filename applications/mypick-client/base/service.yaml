@@ -1,0 +1,27 @@
+# mypick-client Service
+# MyPick Client service configuration for Kubernetes
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mypick-client
+  labels:
+    app: mypick-client
+    tier: frontend
+    component: mypick
+spec:
+  type: ClusterIP
+  selector:
+    app: mypick-client
+  ports:
+  # Next.js HTTP port
+  - name: http
+    port: 80
+    targetPort: 3300
+    protocol: TCP
+
+  # Session affinity for better performance
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours

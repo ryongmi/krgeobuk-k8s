@@ -79,13 +79,13 @@ spec:
             port:
               number: 80
 
-      # my-pick-server: /mypick/*
-      # 예: api.192.168.0.28.nip.io/mypick/items → my-pick-server:80/mypick/items
+      # mypick-server: /mypick/*
+      # 예: api.192.168.0.28.nip.io/mypick/items → mypick-server:80/mypick/items
       - path: /mypick
         pathType: Prefix
         backend:
           service:
-            name: my-pick-server
+            name: mypick-server
             port:
               number: 80
 
@@ -209,7 +209,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: my-pick-client
+            name: mypick-client
             port:
               number: 80
 
@@ -241,7 +241,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: my-pick-admin-client
+            name: mypick-admin-client
             port:
               number: 80
 
@@ -258,14 +258,14 @@ spec:
 # 클라이언트 (서브도메인):
 #   - portal.192.168.0.28.nip.io       → portal-client (Next.js)
 #   - portal-admin.192.168.0.28.nip.io → portal-admin-client (Next.js)
-#   - mypick.192.168.0.28.nip.io       → my-pick-client (Next.js)
-#   - mypick-admin.192.168.0.28.nip.io → my-pick-admin-client (Next.js)
+#   - mypick.192.168.0.28.nip.io       → mypick-client (Next.js)
+#   - mypick-admin.192.168.0.28.nip.io → mypick-admin-client (Next.js)
 #
 # API (api 서브도메인 + 경로):
 #   - api.192.168.0.28.nip.io/auth/*   → auth-server (NestJS)
 #   - api.192.168.0.28.nip.io/authz/*  → authz-server (NestJS)
 #   - api.192.168.0.28.nip.io/portal/* → portal-server (NestJS)
-#   - api.192.168.0.28.nip.io/mypick/* → my-pick-server (NestJS)
+#   - api.192.168.0.28.nip.io/mypick/* → mypick-server (NestJS)
 #
 # 📝 API 호출 예시:
 # -----------------

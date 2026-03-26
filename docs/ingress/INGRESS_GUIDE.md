@@ -22,7 +22,7 @@ Kubernetes 클러스터에 외부 트래픽을 라우팅하기 위한 Ingress �
 Ingress는 Kubernetes 클러스터 외부에서 내부 서비스로의 HTTP/HTTPS 트래픽을 라우팅합니다.
 
 **주요 기능**:
-- **Path 기반 라우팅**: `/auth` → auth-server, `/mypick` → my-pick-client
+- **Path 기반 라우팅**: `/auth` → auth-server, `/mypick` → mypick-client
 - **Host 기반 라우팅**: `auth.krgeobuk.com` → auth-server
 - **TLS/SSL 종료**: HTTPS 트래픽 처리 및 인증서 관리
 - **Load Balancing**: 여러 Pod 간 트래픽 분산
@@ -52,8 +52,8 @@ NGINX Ingress Controller
 │  /auth/*      → auth-server:8000    │
 │  /authz/*     → authz-server:8100   │
 │  /portal-api/* → portal-server:8200 │
-│  /mypick-api/* → my-pick-server:8300│
-│  /mypick/*    → my-pick-client:3300 │
+│  /mypick-api/* → mypick-server:8300│
+│  /mypick/*    → mypick-client:3300 │
 │  /*           → portal-client:3000  │
 └─────────────────────────────────────┘
     ↓
@@ -71,10 +71,10 @@ http://dev.krgeobuk.local/                     → portal-client (메인 포털)
 http://dev.krgeobuk.local/auth/login           → auth-server
 http://dev.krgeobuk.local/authz/permissions    → authz-server
 http://dev.krgeobuk.local/portal-api/users     → portal-server
-http://dev.krgeobuk.local/mypick-api/feeds     → my-pick-server
-http://dev.krgeobuk.local/mypick/              → my-pick-client
+http://dev.krgeobuk.local/mypick-api/feeds     → mypick-server
+http://dev.krgeobuk.local/mypick/              → mypick-client
 http://dev.krgeobuk.local/portal-admin/        → portal-admin-client
-http://dev.krgeobuk.local/mypick-admin/        → my-pick-admin-client
+http://dev.krgeobuk.local/mypick-admin/        → mypick-admin-client
 ```
 
 #### Production (krgeobuk.com)
@@ -84,10 +84,10 @@ https://krgeobuk.com/                          → portal-client
 https://krgeobuk.com/auth/login                → auth-server
 https://krgeobuk.com/authz/permissions         → authz-server
 https://krgeobuk.com/portal-api/users          → portal-server
-https://krgeobuk.com/mypick-api/feeds          → my-pick-server
-https://krgeobuk.com/mypick/                   → my-pick-client
+https://krgeobuk.com/mypick-api/feeds          → mypick-server
+https://krgeobuk.com/mypick/                   → mypick-client
 https://krgeobuk.com/portal-admin/             → portal-admin-client
-https://krgeobuk.com/mypick-admin/             → my-pick-admin-client
+https://krgeobuk.com/mypick-admin/             → mypick-admin-client
 ```
 
 ---
@@ -223,7 +223,7 @@ curl http://dev.krgeobuk.local/mypick-api/health
 # auth-server 테스트
 curl -H "Host: dev.krgeobuk.local" http://<NODE_IP>:30080/auth/health
 
-# my-pick-server 테스트
+# mypick-server 테스트
 curl -H "Host: dev.krgeobuk.local" http://<NODE_IP>:30080/mypick-api/health
 
 # 프론트엔드 테스트

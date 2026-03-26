@@ -37,10 +37,10 @@ docs/
 
 **서비스**:
 - portal-server (포털 백엔드)
-- my-pick-server (MyPick 백엔드)
-- my-pick-client (MyPick 클라이언트)
+- mypick-server (MyPick 백엔드)
+- mypick-client (MyPick 클라이언트)
 - portal-admin-client (포털 관리자)
-- my-pick-admin-client (MyPick 관리자)
+- mypick-admin-client (MyPick 관리자)
 
 **문서**:
 - [📄 Phase 2 완료 보고서](phase2/PHASE2_SUMMARY.md) - Phase 2 작업 내용 및 성과
@@ -79,12 +79,12 @@ kubectl apply -k environments/prod
 
 **필수 (Phase 2)**:
 4. portal-server Secret 생성 (auth-server JWT 공개키 포함)
-5. my-pick-server Secret 생성 (auth-server JWT 공개키 + YouTube/Twitter API 키)
-6. my-pick-client Secret 생성 (클라이언트 사이드 API 키)
+5. mypick-server Secret 생성 (auth-server JWT 공개키 + YouTube/Twitter API 키)
+6. mypick-client Secret 생성 (클라이언트 사이드 API 키)
 
 **선택 (미래 확장)**:
 - portal-admin-client Secret (현재 불필요)
-- my-pick-admin-client Secret (현재 불필요)
+- mypick-admin-client Secret (현재 불필요)
 
 ---
 
@@ -112,12 +112,12 @@ kubectl apply -k environments/prod
 | auth-server | 8000 | 8010 | auth |
 | authz-server | 8100 | 8110 | authz |
 | portal-server | 8200 | 8210 | portal |
-| my-pick-server | 8300 | 8310 | mypick |
+| mypick-server | 8300 | 8310 | mypick |
 | auth-client | 3000 | - | - |
 | portal-client | 3200 | - | - |
 | portal-admin-client | 3210 | - | - |
-| my-pick-client | 3300 | - | - |
-| my-pick-admin-client | 3310 | - | - |
+| mypick-client | 3300 | - | - |
+| mypick-admin-client | 3310 | - | - |
 
 ---
 

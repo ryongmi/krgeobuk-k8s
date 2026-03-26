@@ -23,14 +23,14 @@ usage() {
     echo ""
     echo "예시:"
     echo "  $0 auth-server .env"
-    echo "  $0 my-pick-server .env.prod"
+    echo "  $0 mypick-server .env.prod"
     echo ""
     echo "지원 서비스:"
     echo "  - auth-server"
     echo "  - authz-server"
     echo "  - portal-server"
-    echo "  - my-pick-server"
-    echo "  - my-pick-client"
+    echo "  - mypick-server"
+    echo "  - mypick-client"
     exit 1
 }
 
@@ -180,17 +180,17 @@ data:
 EOF
         ;;
 
-    my-pick-server)
+    mypick-server)
         cat > "$OUTPUT_FILE" << EOF
-# my-pick-server Secrets
+# mypick-server Secrets
 # 자동 생성됨: $(date)
 
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-pick-server-secrets
+  name: mypick-server-secrets
   labels:
-    app: my-pick-server
+    app: mypick-server
 type: Opaque
 data:
   MYSQL_PASSWORD: $(base64_encode "${MYSQL_PASSWORD}")
@@ -203,9 +203,9 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-pick-server-jwt-keys
+  name: mypick-server-jwt-keys
   labels:
-    app: my-pick-server
+    app: mypick-server
 type: Opaque
 data:
   access-public.key: $(cat jwt-keys/access-public.key | base64 -w 0)
@@ -213,11 +213,11 @@ data:
 EOF
         ;;
 
-    my-pick-client)
+    mypick-client)
         echo -e "${YELLOW}========================================${NC}"
-        echo -e "${YELLOW}my-pick-client 안내${NC}"
+        echo -e "${YELLOW}mypick-client 안내${NC}"
         echo -e "${YELLOW}========================================${NC}"
-        echo -e "${CYAN}my-pick-client는 현재 별도의 Secret이 필요하지 않습니다.${NC}"
+        echo -e "${CYAN}mypick-client는 현재 별도의 Secret이 필요하지 않습니다.${NC}"
         echo -e "${CYAN}(YouTube, Twitter API는 레거시로 더 이상 사용하지 않음)${NC}"
         echo ""
         echo -e "${GREEN}Secret 생성을 건너뜁니다.${NC}"

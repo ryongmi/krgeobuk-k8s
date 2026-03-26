@@ -31,14 +31,14 @@ usage() {
     echo "    auth-server          - 인증 서버"
     echo "    authz-server         - 권한 서버"
     echo "    portal-server        - 포털 서버"
-    echo "    my-pick-server       - MyPick 서버"
+    echo "    mypick-server       - MyPick 서버"
     echo ""
     echo "  프론트엔드:"
     echo "    auth-client          - 인증 클라이언트"
     echo "    portal-client        - 포털 클라이언트"
     echo "    portal-admin-client  - 포털 관리자 클라이언트"
-    echo "    my-pick-client       - MyPick 클라이언트"
-    echo "    my-pick-admin-client - MyPick 관리자 클라이언트"
+    echo "    mypick-client       - MyPick 클라이언트"
+    echo "    mypick-admin-client - MyPick 관리자 클라이언트"
     echo ""
     echo "예시:"
     echo "  $0 all                # 모든 서비스 빌드"
@@ -90,8 +90,8 @@ echo -e "${GREEN}✓${NC} Docker 설치 확인 완료"
 echo ""
 
 # 빌드할 서비스 목록 설정
-declare -a BACKEND_SERVICES=("auth-server" "authz-server" "portal-server" "my-pick-server")
-declare -a FRONTEND_SERVICES=("auth-client" "portal-client" "portal-admin-client" "my-pick-client" "my-pick-admin-client")
+declare -a BACKEND_SERVICES=("auth-server" "authz-server" "portal-server" "mypick-server")
+declare -a FRONTEND_SERVICES=("auth-client" "portal-client" "portal-admin-client" "mypick-client" "mypick-admin-client")
 declare -a SERVICES
 
 case $SERVICE in
@@ -104,7 +104,7 @@ case $SERVICE in
     clients)
         SERVICES=("${FRONTEND_SERVICES[@]}")
         ;;
-    auth-server|authz-server|portal-server|my-pick-server|auth-client|portal-client|portal-admin-client|my-pick-client|my-pick-admin-client)
+    auth-server|authz-server|portal-server|mypick-server|auth-client|portal-client|portal-admin-client|mypick-client|mypick-admin-client)
         SERVICES=("$SERVICE")
         ;;
     *)

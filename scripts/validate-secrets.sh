@@ -92,17 +92,17 @@ if grep -q "GOOGLE_CLIENT_SECRET" "$ENV_FILE" 2>/dev/null; then
     echo ""
 fi
 
-# my-pick-server 특정 변수
+# mypick-server 특정 변수
 if grep -q "YOUTUBE_API_KEY" "$ENV_FILE" 2>/dev/null; then
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${BLUE}my-pick-server 변수 검증${NC}"
+    echo -e "${BLUE}mypick-server 변수 검증${NC}"
     echo -e "${BLUE}========================================${NC}"
     check_var "YOUTUBE_API_KEY"
     check_var "TWITTER_BEARER_TOKEN"
     echo ""
 fi
 
-# my-pick-client는 현재 Secret이 필요하지 않음 (레거시 제거됨)
+# mypick-client는 현재 Secret이 필요하지 않음 (레거시 제거됨)
 
 # JWT 키 파일 확인
 echo -e "${BLUE}========================================${NC}"

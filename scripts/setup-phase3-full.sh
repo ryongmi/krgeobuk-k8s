@@ -181,14 +181,14 @@ prompt_input "SMTP 비밀번호" "dummy-smtp-password" SMTP_PASS true
 echo ""
 
 #####################################################################
-# 5. External API 설정 (my-pick-server)
+# 5. External API 설정 (mypick-server)
 #####################################################################
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}5. External API 설정 (YouTube, Twitter)${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${YELLOW}my-pick-server에서 사용할 외부 API 키를 입력하세요.${NC}"
+echo -e "${YELLOW}mypick-server에서 사용할 외부 API 키를 입력하세요.${NC}"
 echo -e "${YELLOW}테스트용으로는 엔터를 눌러 더미 값을 사용할 수 있습니다.${NC}"
 echo ""
 
@@ -399,16 +399,16 @@ EOF
 echo -e "${GREEN}✓ portal-server secret 생성 완료${NC}"
 echo ""
 
-# 8.5 my-pick-server secret
-echo -e "${YELLOW}5. my-pick-server secret 생성 중...${NC}"
+# 8.5 mypick-server secret
+echo -e "${YELLOW}5. mypick-server secret 생성 중...${NC}"
 
-cat > "${K8S_ROOT}/applications/my-pick-server/secret.yaml" << EOF
+cat > "${K8S_ROOT}/applications/mypick-server/secret.yaml" << EOF
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-pick-server-secrets
+  name: mypick-server-secrets
   labels:
-    app: my-pick-server
+    app: mypick-server
 type: Opaque
 stringData:
   MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
@@ -421,16 +421,16 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-pick-server-jwt-keys
+  name: mypick-server-jwt-keys
   labels:
-    app: my-pick-server
+    app: mypick-server
 type: Opaque
 stringData:
   access-public.key: |
 $(sed 's/^/    /' /tmp/jwt-keys-auth/access-public.key)
 EOF
 
-echo -e "${GREEN}✓ my-pick-server secret 생성 완료${NC}"
+echo -e "${GREEN}✓ mypick-server secret 생성 완료${NC}"
 echo ""
 
 # JWT 키 임시 파일 정리
@@ -553,7 +553,7 @@ echo -e "${GREEN}✓ krgeobuk-infrastructure/.env${NC}"
 echo -e "${GREEN}✓ applications/auth-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/authz-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ applications/portal-server/secret.yaml${NC}"
-echo -e "${GREEN}✓ applications/my-pick-server/secret.yaml${NC}"
+echo -e "${GREEN}✓ applications/mypick-server/secret.yaml${NC}"
 echo -e "${GREEN}✓ base/external-mysql.yaml${NC}"
 echo -e "${GREEN}✓ base/external-redis.yaml${NC}"
 

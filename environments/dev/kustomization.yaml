@@ -13,10 +13,10 @@ resources:
 - ../../applications/portal-client/overlays/dev
 # Phase 2 Services
 - ../../applications/portal-server/overlays/dev
-- ../../applications/my-pick-server/overlays/dev
-- ../../applications/my-pick-client/overlays/dev
+- ../../applications/mypick-server/overlays/dev
+- ../../applications/mypick-client/overlays/dev
 - ../../applications/portal-admin-client/overlays/dev
-- ../../applications/my-pick-admin-client/overlays/dev
+- ../../applications/mypick-admin-client/overlays/dev
 # Ingress
 - ingress.yaml
 
